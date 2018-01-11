@@ -61,7 +61,7 @@ public class Local_NLU implements OfflineNLUProvider {
             myKeywords.add(new Keyword(new String[]{"何曜日"}, MyAction.MyActionType.GIVE_DATE));
             myKeywords.add(new Keyword(new String[]{"何日"}, MyAction.MyActionType.GIVE_DATE));
             myKeywords.add(new Keyword(new String[]{"回転", "度"}, MyAction.MyActionType.ROTATE));
-            myKeywords.add(new Keyword(new String[]{"名前"},MyAction.MyActionType.INTRODUCE));
+            myKeywords.add(new Keyword(new String[]{"かんだ"},MyAction.MyActionType.KANDA));
         }
     }
 

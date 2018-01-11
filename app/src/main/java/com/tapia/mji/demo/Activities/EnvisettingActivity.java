@@ -183,8 +183,17 @@ public class EnvisettingActivity extends TapiaActivity{
             }
         });
 
+        /*カメラ起動(試験的に実装)**************************************************************/
 
-
+        //「camera」ボタン押下
+        findViewById(R.id.camera).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent=new Intent();
+                intent.setAction("android.media.action.IMAGE_CAPTURE");
+                startActivity(intent);
+                //finish();
+            }
+        });
     }
-
 }

@@ -37,9 +37,9 @@ public abstract class MySimpleAction extends MyAction {
         }
     }
 
-    public static class Introduce extends MySimpleAction{
-        public Introduce(SimpleAction.OnSimpleActionListener simpleActionListener){
-            super(simpleActionListener,MyActionType.INTRODUCE);
+    public static class Kanda extends MySimpleAction{
+        public Kanda(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.KANDA);
         }
     }
 

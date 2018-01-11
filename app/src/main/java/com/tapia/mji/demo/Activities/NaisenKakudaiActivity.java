@@ -44,10 +44,7 @@ public class NaisenKakudaiActivity extends TapiaActivity {
 
         //日本語設定
         TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
-        sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
         ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
-        offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
-        final ArrayList actions=new ArrayList<>();
 
         /*話す***********************************************************************************/
 
@@ -167,38 +164,6 @@ public class NaisenKakudaiActivity extends TapiaActivity {
                 timelag.setting(timelag.move(activity));
             }
         });
-
-        /*言葉認識*********************************************************************************/
-
-/*
-        actions.add(new MySimpleAction.Introduce(new SimpleAction.OnSimpleActionListener(){
-            @Override
-            public void onSimpleAction(){
-                try{
-                    ttsProvider.ask("私の名前はタピアです",sttProvider);
-                }catch(LanguageNotSupportedException e){
-                    e.printStackTrace();
-                }
-                ttsProvider.setOnSpeechCompleteListener(null);
-            }
-        }));
-
-        sttProvider.listen();   //録音の開始
-
-        //録音認識完了
-        sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
-            @Override
-            public void onRecognitionComplete(List<String> list){
-                offlineNLUProvider.analyseText(list,actions);
-                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
-                    @Override
-                    public void onSpeechComplete(){
-                        sttProvider.stopListening();
-                    }
-                });
-            }
-        });
-*/
     }
 
     @Override

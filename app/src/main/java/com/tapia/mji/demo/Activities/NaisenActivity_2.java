@@ -68,12 +68,7 @@ public class NaisenActivity_2 extends TapiaActivity {
         Button button2=(Button)findViewById(R.id.button2);
         Button button3=(Button)findViewById(R.id.button3);
 
-        //会話
-        TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
-        sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
-        ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
-        offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
-        final ArrayList actions=new ArrayList<>();
+        final Intent intentkakudai = new Intent(activity, NaisenKakudaiActivity.class);
 
         /*画面表示処理*****************************************************************************/
 
@@ -179,7 +174,6 @@ public class NaisenActivity_2 extends TapiaActivity {
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentkakudai = new Intent(activity, NaisenKakudaiActivity.class);
                 switch (flag){
                     case 1:
                         intentkakudai.putExtra("flag", "11");
@@ -215,7 +209,6 @@ public class NaisenActivity_2 extends TapiaActivity {
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentkakudai = new Intent(activity, NaisenKakudaiActivity.class);
                 switch (flag){
                     case 1:
                         intentkakudai.putExtra("flag", "12");
@@ -243,7 +236,6 @@ public class NaisenActivity_2 extends TapiaActivity {
         findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentkakudai = new Intent(activity, NaisenKakudaiActivity.class);
                 switch (flag){
                     case 1:
                         intentkakudai.putExtra("flag", "13");
@@ -267,37 +259,6 @@ public class NaisenActivity_2 extends TapiaActivity {
             }
         });
 
-        /*言葉認識*********************************************************************************/
-
-/*
-        actions.add(new MySimpleAction.Introduce(new SimpleAction.OnSimpleActionListener(){
-            @Override
-            public void onSimpleAction(){
-                try{
-                    ttsProvider.ask("私の名前はタピアです",sttProvider);
-                }catch(LanguageNotSupportedException e){
-                    e.printStackTrace();
-                }
-                ttsProvider.setOnSpeechCompleteListener(null);
-            }
-        }));
-
-        sttProvider.listen();   //録音の開始
-
-        //録音認識完了
-        sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
-            @Override
-            public void onRecognitionComplete(List<String> list){
-                offlineNLUProvider.analyseText(list,actions);
-                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
-                    @Override
-                    public void onSpeechComplete(){
-                       sttProvider.stopListening();
-                    }
-                });
-            }
-        });
-*/
     }
 
     @Override

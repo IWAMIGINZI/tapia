@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.tapia.mji.demo.Actions.MySimpleAction;
 import com.tapia.mji.demo.R;
@@ -14,6 +15,7 @@ import com.tapia.mji.tapialib.Languages.Language;
 import com.tapia.mji.tapialib.Providers.Interfaces.STTProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.TTSProvider;
 import com.tapia.mji.tapialib.TapiaApp;
+import com.tapia.mji.tapialib.Utils.TapiaAnimation;
 import com.tapia.mji.tapialib.Utils.TapiaRobot;
 
 import java.util.ArrayList;
@@ -40,10 +42,7 @@ public class IwataniMenuActivity extends TapiaActivity implements View.OnClickLi
 
         //日本語の設定
         TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
-        sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
         ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
-        offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
-        final ArrayList actions=new ArrayList<>();
 
         /*話す*********************************************************************************/
 
@@ -58,38 +57,6 @@ public class IwataniMenuActivity extends TapiaActivity implements View.OnClickLi
                 //終話後の処理
             }
         });
-
-        /*言葉認識*********************************************************************************/
-
-/*
-        actions.add(new MySimpleAction.Introduce(new SimpleAction.OnSimpleActionListener(){
-            @Override
-            public void onSimpleAction(){
-                try{
-                    ttsProvider.ask("私の名前はタピアです",sttProvider);
-                }catch(LanguageNotSupportedException e){
-                    e.printStackTrace();
-                }
-                ttsProvider.setOnSpeechCompleteListener(null);
-            }
-        }));
-
-        sttProvider.listen();   //録音の開始
-
-        //録音認識完了
-        sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
-            @Override
-            public void onRecognitionComplete(List<String> list){
-                offlineNLUProvider.analyseText(list,actions);
-                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
-                    @Override
-                    public void onSpeechComplete(){
-                        sttProvider.stopListening();
-                    }
-                });
-            }
-        });
-*/
     }
 
     @Override

@@ -52,6 +52,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     Timer timer = new Timer();
     int time = 60000;
 
+    TTSProvider.OnStateChangeListener onTTSstateListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +84,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
         final ArrayList actions=new ArrayList<>();
 
+        //内線番号表示用
+        final Intent intentsitei = new Intent(activity, NaisenKakudaiSiteiActivity.class);
 
 
         /*画面遷移*********************************************************************************/
@@ -105,17 +109,14 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             }
         });
 
-        /*言葉認識*********************************************************************************/
+        /*音声認識*********************************************************************************/
 
-        actions.add(new MySimpleAction.Introduce(new SimpleAction.OnSimpleActionListener(){
+        actions.add(new MySimpleAction.Kanda(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
-                try{
-                    startActivity(new Intent(activity, IwataniMenuActivity.class));
-                    ttsProvider.ask("私の名前はタピアです",sttProvider);
-                }catch(LanguageNotSupportedException e){
-                    e.printStackTrace();
-                }
+                intentsitei.putExtra("name","神田");
+                intentsitei.putExtra("number","5102");
+                startActivity(intentsitei);
                 ttsProvider.setOnSpeechCompleteListener(null);
             }
         }));
@@ -135,7 +136,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 });
             }
         });
-
     }
 
     //Activity終了の際呼ばれる
@@ -179,7 +179,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 //乱数によって、アニメーションを切り替える
                 RandomNumber rm = new RandomNumber();
                 int n = rm.RN();
-                //最大10種類のアニメーションを設定可能
                 //処理:乱数毎にアニメーションを設定
                 //上記以外のアニメーションを停止する
                 switch (n) {
