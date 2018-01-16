@@ -43,6 +43,31 @@ public abstract class MySimpleAction extends MyAction {
         }
     }
 
+    public static class Test extends MySimpleAction{
+        public Test(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.TEST);
+        }
+    }
+
+    public static class Day extends MySimpleAction{
+        public Day(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.GIVE_DATE);
+        }
+    }
+
+    public static class Time extends MySimpleAction{
+        public Time(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.GIVE_TIME);
+        }
+    }
+
+    public static class Move extends MySimpleAction{
+        public Move(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.MOVE);
+        }
+    }
+
+
 }
 
 

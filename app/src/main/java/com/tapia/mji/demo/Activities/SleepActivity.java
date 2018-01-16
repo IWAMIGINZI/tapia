@@ -12,6 +12,8 @@ import android.view.ViewDebug;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tapia.mji.demo.Actions.GiveDate;
+import com.tapia.mji.demo.Actions.GiveTime;
 import com.tapia.mji.demo.Actions.MySimpleAction;
 import com.tapia.mji.demo.Actions.Rotate;
 import com.tapia.mji.demo.R;
@@ -30,6 +32,8 @@ import com.tapia.mji.tapialib.Utils.TapiaRobot;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -83,10 +87,19 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
         offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
         final ArrayList actions=new ArrayList<>();
+        sttProvider.listen();   //録音の開始
 
         //内線番号表示用
         final Intent intentsitei = new Intent(activity, NaisenKakudaiSiteiActivity.class);
 
+        //現在の日時を取得
+        Calendar cal=Calendar.getInstance();
+        final String month=String.valueOf(cal.get(Calendar.MONTH)+1);
+        final String day=String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
+        final String hour=String.valueOf(cal.get(Calendar.HOUR_OF_DAY));
+        final String minute=String.valueOf(cal.get(Calendar.MINUTE));
+        Log.v("テスト",hour+"時"+ minute+"分");
+        Log.v("テスト",month+"月" +day+"日");
 
         /*画面遷移*********************************************************************************/
 
@@ -109,19 +122,121 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             }
         });
 
+/*
+        sttProvider.listen();   //録音の開始
+
+        sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener() {
+
+            public void onRecognitionComplete(List<String> list) {
+                try {
+                    ttsProvider.say(list.get(0).toString());
+                } catch (LanguageNotSupportedException e) {
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+
+                    public void onSpeechComplete() {
+                        sttProvider.listen();
+                        //sttProvider.stopListening();
+                    }
+                });
+            }
+
+        });
+*/
+
         /*音声認識*********************************************************************************/
 
         actions.add(new MySimpleAction.Kanda(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
+/*
                 intentsitei.putExtra("name","神田");
                 intentsitei.putExtra("number","5102");
                 startActivity(intentsitei);
+*/
+                try {
+                    ttsProvider.ask("私の名前はタピアです", sttProvider);
+                } catch (LanguageNotSupportedException e) {
+                    e.printStackTrace();
+                }
                 ttsProvider.setOnSpeechCompleteListener(null);
             }
         }));
 
-        sttProvider.listen();   //録音の開始
+        actions.add(new MySimpleAction.Test(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try {
+                    ttsProvider.ask("テストです", sttProvider);
+                } catch (LanguageNotSupportedException e) {
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        actions.add(new MySimpleAction.Day(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("今日は"+month+"月"+day+"日です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+                startActivity(new Intent(activity, IwataniMenuActivity.class));
+            }
+        }));
+
+        actions.add(new MySimpleAction.Move(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                //移動
+                startActivity(new Intent(activity, IwataniMenuActivity.class));
+            }
+        }));
+
+
+/*
+        actions.add(new GiveTime(new GiveTime.OnGiveTimeListener() {
+            @Override
+            public void onGiveTime(Date time) {
+                try {
+                    ttsProvider.ask(time+"です", sttProvider);
+                } catch (LanguageNotSupportedException e) {
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+*/
+
+        actions.add(new MySimpleAction.Time(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask(hour+"時"+minute+"分です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+/*
+        actions.add(new GiveDate(new GiveDate.OnGiveDateListener() {
+            @Override
+            public void onGiveDate(Date date) {
+                try{
+                    ttsProvider.ask(date+"です",sttProvider);
+                }catch (LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+*/
 
         //録音認識完了
         sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
@@ -131,7 +246,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
                     @Override
                     public void onSpeechComplete(){
-                        sttProvider.stopListening();
+                        sttProvider.listen();
+                        //sttProvider.stopListening();
                     }
                 });
             }

@@ -54,7 +54,7 @@ public class EnvisettingActivity extends TapiaActivity{
         Button finish=(Button)findViewById(R.id.finish);
 
         //yahooに繋ぐ
-        Uri uri=Uri.parse("https://www.yahoo.com/");
+        Uri uri=Uri.parse("https://www.yahoo.co.jp");
         final Intent yahoo=new Intent(Intent.ACTION_VIEW,uri);
 
         /*音量設定*********************************************************************************/

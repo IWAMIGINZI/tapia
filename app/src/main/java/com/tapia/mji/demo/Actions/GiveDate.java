@@ -18,6 +18,7 @@ public class GiveDate extends MyAction {
     public Date getMood(){
         return onGiveDateListener.date;
     }
+
     public void setDate(Date date){
         onGiveDateListener.date = date;
     }

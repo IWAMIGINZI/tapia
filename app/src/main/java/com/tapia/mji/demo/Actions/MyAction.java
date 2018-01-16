@@ -48,6 +48,8 @@ public abstract class MyAction extends Action {
         GIVE_DATE,
         BYE,
         KANDA,
+        TEST,
+        MOVE,
 
     }
 }
