@@ -43,9 +43,9 @@ public abstract class MySimpleAction extends MyAction {
         }
     }
 
-    public static class Test extends MySimpleAction{
-        public Test(SimpleAction.OnSimpleActionListener simpleActionListener){
-            super(simpleActionListener,MyActionType.TEST);
+    public static class Weather extends MySimpleAction{
+        public Weather(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.WEATHER);
         }
     }
 
@@ -66,6 +66,26 @@ public abstract class MySimpleAction extends MyAction {
             super(simpleActionListener,MyActionType.MOVE);
         }
     }
+
+    public static class Week extends MySimpleAction{
+        public Week(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.WEEK);
+        }
+    }
+
+    public static class News extends MySimpleAction{
+        public News(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.NEWS);
+        }
+    }
+
+    public static class Camera extends MySimpleAction{
+        public Camera(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.CAMERA);
+        }
+    }
+
+
 
 
 }

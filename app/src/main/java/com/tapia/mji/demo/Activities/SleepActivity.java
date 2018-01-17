@@ -5,19 +5,14 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewDebug;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.tapia.mji.demo.Actions.GiveDate;
-import com.tapia.mji.demo.Actions.GiveTime;
 import com.tapia.mji.demo.Actions.MySimpleAction;
-import com.tapia.mji.demo.Actions.Rotate;
 import com.tapia.mji.demo.R;
-import com.tapia.mji.tapialib.Actions.Action;
 import com.tapia.mji.tapialib.Actions.SimpleAction;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
 import com.tapia.mji.tapialib.Exceptions.LanguageNotSupportedException;
@@ -26,21 +21,15 @@ import com.tapia.mji.tapialib.Providers.Interfaces.STTProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.TTSProvider;
 import com.tapia.mji.tapialib.TapiaApp;
 import com.tapia.mji.tapialib.Utils.TapiaAnimation;
-import com.tapia.mji.tapialib.Utils.TapiaRobot;
 
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.content.Context.SENSOR_SERVICE;
-import static com.tapia.mji.tapialib.Utils.TapiaRobot.startSoundLocation;
-import static com.tapia.mji.tapialib.Utils.TapiaRobot.stopSoundLocation;
 
 
 /**
@@ -94,12 +83,25 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         //現在の日時を取得
         Calendar cal=Calendar.getInstance();
-        final String month=String.valueOf(cal.get(Calendar.MONTH)+1);
-        final String day=String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
-        final String hour=String.valueOf(cal.get(Calendar.HOUR_OF_DAY));
-        final String minute=String.valueOf(cal.get(Calendar.MINUTE));
-        Log.v("テスト",hour+"時"+ minute+"分");
-        Log.v("テスト",month+"月" +day+"日");
+        final String month=String.valueOf(cal.get(Calendar.MONTH)+1);   //月
+        final String day=String.valueOf(cal.get(Calendar.DAY_OF_MONTH));    //日
+        final String hour=String.valueOf(cal.get(Calendar.HOUR_OF_DAY));    //時
+        final String minute=String.valueOf(cal.get(Calendar.MINUTE));   //分
+        final String week=String.valueOf(cal.get(Calendar.DAY_OF_WEEK));    //曜日
+        //Log.v("テスト",);
+        //Log.v("テスト",month+"月" +day+"日");
+
+        //天気(ウェブページ)
+        Uri uri_weather=Uri.parse("https://weather.yahoo.co.jp/weather/");
+        final Intent weather=new Intent(Intent.ACTION_VIEW,uri_weather);
+
+        //ニュース(ウェブページ)
+        Uri uri_news=Uri.parse("https://news.yahoo.co.jp/");
+        final Intent news=new Intent(Intent.ACTION_VIEW,uri_news);
+
+        //カメラ起動
+        final Intent camera=new Intent();
+        camera.setAction("android.media.action.IMAGE_CAPTURE");
 
         /*画面遷移*********************************************************************************/
 
@@ -118,7 +120,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onClick(View view) {
                 //メニュー画面へ遷移
-                startActivity(new Intent(activity, IwataniMenuActivity.class));
+                //startActivity(new Intent(activity, IwataniMenuActivity.class));
+                startActivity(camera);
             }
         });
 
@@ -147,35 +150,46 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         /*音声認識*********************************************************************************/
 
+        //「神田」
         actions.add(new MySimpleAction.Kanda(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
-/*
-                intentsitei.putExtra("name","神田");
-                intentsitei.putExtra("number","5102");
-                startActivity(intentsitei);
-*/
-                try {
-                    ttsProvider.ask("私の名前はタピアです", sttProvider);
-                } catch (LanguageNotSupportedException e) {
+                final String number="5102"; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
-                ttsProvider.setOnSpeechCompleteListener(null);
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","神田");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
             }
         }));
 
-        actions.add(new MySimpleAction.Test(new SimpleAction.OnSimpleActionListener(){
+        //「天気」
+        actions.add(new MySimpleAction.Weather(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
-                try {
-                    ttsProvider.ask("テストです", sttProvider);
-                } catch (LanguageNotSupportedException e) {
-                    e.printStackTrace();
-                }
-                ttsProvider.setOnSpeechCompleteListener(null);
+                startActivity(weather);
             }
         }));
 
+        //「ニュース」
+        actions.add(new MySimpleAction.News(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                startActivity(news);
+            }
+        }));
+
+        //「何日」
         actions.add(new MySimpleAction.Day(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
@@ -189,6 +203,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             }
         }));
 
+        //「移動」
         actions.add(new MySimpleAction.Move(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
@@ -197,21 +212,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             }
         }));
 
-
-/*
-        actions.add(new GiveTime(new GiveTime.OnGiveTimeListener() {
-            @Override
-            public void onGiveTime(Date time) {
-                try {
-                    ttsProvider.ask(time+"です", sttProvider);
-                } catch (LanguageNotSupportedException e) {
-                    e.printStackTrace();
-                }
-                ttsProvider.setOnSpeechCompleteListener(null);
-            }
-        }));
-*/
-
+        //「何時」
         actions.add(new MySimpleAction.Time(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
@@ -224,19 +225,50 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             }
         }));
 
-/*
-        actions.add(new GiveDate(new GiveDate.OnGiveDateListener() {
+        //「何曜日」
+        actions.add(new MySimpleAction.Week(new SimpleAction.OnSimpleActionListener(){
             @Override
-            public void onGiveDate(Date date) {
+            public void onSimpleAction(){
+                String week_name=null;
+                switch (week){
+                    case "1":
+                        week_name="にち";
+                        break;
+                    case "2":
+                        week_name="げつ";
+                        break;
+                    case "3":
+                        week_name="か";
+                        break;
+                    case "4":
+                        week_name="すい";
+                        break;
+                    case "5":
+                        week_name="もく";
+                        break;
+                    case "6":
+                        week_name="きん";
+                        break;
+                    case "7":
+                        week_name="ど";
+                        break;
+                }
                 try{
-                    ttsProvider.ask(date+"です",sttProvider);
-                }catch (LanguageNotSupportedException e){
+                    ttsProvider.ask(week_name+"曜日です",sttProvider);
+                }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
                 ttsProvider.setOnSpeechCompleteListener(null);
             }
         }));
-*/
+
+        //「カメラ」
+        actions.add(new MySimpleAction.Camera(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                startActivity(camera);
+            }
+        }));
 
         //録音認識完了
         sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
@@ -265,7 +297,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         }
 
         //タイマキャンセル
-        timer.cancel();
+        //timer.cancel();   /*←Animationストップがあれば必要ない？重くならないかテスト中*/
 
         //音のする方向へ動く処理のキャンセル
         //stopSoundLocation(this);

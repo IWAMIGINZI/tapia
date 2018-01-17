@@ -57,17 +57,20 @@ public class Local_NLU implements OfflineNLUProvider {
 
         }
         else if(language == Language.LanguageID.JAPANESE){
-            myKeywords.add(new Keyword(new String[]{"なんじ"}, MyAction.MyActionType.GIVE_TIME));
             myKeywords.add(new Keyword(new String[]{"何時"}, MyAction.MyActionType.GIVE_TIME));
-            //myKeywords.add(new Keyword(new String[]{"何曜日","なんにち"}, MyAction.MyActionType.GIVE_DATE));
+            myKeywords.add(new Keyword(new String[]{"なんじ"}, MyAction.MyActionType.GIVE_TIME));
+            myKeywords.add(new Keyword(new String[]{"何曜日"}, MyAction.MyActionType.WEEK));
+            myKeywords.add(new Keyword(new String[]{"なんようび"}, MyAction.MyActionType.WEEK));
             myKeywords.add(new Keyword(new String[]{"何日"}, MyAction.MyActionType.GIVE_DATE));
             myKeywords.add(new Keyword(new String[]{"なんにち"}, MyAction.MyActionType.GIVE_DATE));
             myKeywords.add(new Keyword(new String[]{"回転", "度"}, MyAction.MyActionType.ROTATE));
-            myKeywords.add(new Keyword(new String[]{"名前"},MyAction.MyActionType.KANDA));
-            myKeywords.add(new Keyword(new String[]{"テスト"},MyAction.MyActionType.TEST));
-            myKeywords.add(new Keyword(new String[]{"いどう"},MyAction.MyActionType.MOVE));
+            myKeywords.add(new Keyword(new String[]{"かんだ"},MyAction.MyActionType.KANDA));
+            myKeywords.add(new Keyword(new String[]{"天気"},MyAction.MyActionType.WEATHER));
+            myKeywords.add(new Keyword(new String[]{"てんき"},MyAction.MyActionType.WEATHER));
             myKeywords.add(new Keyword(new String[]{"移動"},MyAction.MyActionType.MOVE));
-
+            myKeywords.add(new Keyword(new String[]{"いどう"},MyAction.MyActionType.MOVE));
+            myKeywords.add(new Keyword(new String[]{"ニュース"},MyAction.MyActionType.NEWS));
+            myKeywords.add(new Keyword(new String[]{"カメラ"},MyAction.MyActionType.CAMERA));
         }
     }
 
