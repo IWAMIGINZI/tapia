@@ -13,10 +13,12 @@ import android.widget.ImageView;
 
 import com.tapia.mji.demo.Actions.MySimpleAction;
 import com.tapia.mji.demo.R;
+import com.tapia.mji.tapialib.Actions.Action;
 import com.tapia.mji.tapialib.Actions.SimpleAction;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
 import com.tapia.mji.tapialib.Exceptions.LanguageNotSupportedException;
 import com.tapia.mji.tapialib.Languages.Language;
+import com.tapia.mji.tapialib.Providers.Interfaces.NLUProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.STTProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.TTSProvider;
 import com.tapia.mji.tapialib.TapiaApp;
@@ -274,6 +276,18 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
             @Override
             public void onRecognitionComplete(List<String> list){
+                offlineNLUProvider.setOnAnalyseCompleteListener(new NLUProvider.OnAnalyseCompleteListener() {
+                    @Override
+                    public void OnAnalyseComplete(Action action) {
+                        if(action==null){
+                            try{
+                                ttsProvider.say("わかりません");
+                            }catch(LanguageNotSupportedException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
                 offlineNLUProvider.analyseText(list,actions);
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
                     @Override
