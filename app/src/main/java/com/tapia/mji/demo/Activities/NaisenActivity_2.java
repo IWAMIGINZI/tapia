@@ -37,20 +37,21 @@ public class NaisenActivity_2 extends TapiaActivity {
         /*宣言部***********************************************************************************/
 
         //内線番号
-        final String eigyo1="3152";
-        final String eigyo2="2206";
-        final String eigyo3="6006";
-        final String unyo1="1103";
-        final String unyo2="3021";
-        final String unyo3="3211";
-        final String kaihatu1="1101";
-        final String kaihatu2="2302";
-        final String kaihatu3="3103";
-        final String kiban="3111";
-        final String tokatu="5104";
-        final String ict="6021";
-        final String kanri="5807";
-        final String support="1532";
+        ExtensionNumber en=new ExtensionNumber();
+        final String eigyo1=en.eigyo1;
+        final String eigyo2=en.eigyo2;
+        final String eigyo3=en.eigyo3;
+        final String unyo1=en.unyo1;
+        final String unyo2=en.unyo2;
+        final String unyo3=en.unyo3;
+        final String kaihatu1=en.kaihatu1;
+        final String kaihatu2=en.kaihatu2;
+        final String kaihatu3=en.kaihatu3;
+        final String kiban=en.kiban;
+        final String tokatu=en.tokatu;
+        final String ict=en.ict;
+        final String kanri=en.kanri;
+        final String support=en.support;
 
         //テキストサイズ(Button用)
         float textsize_normal=40;

@@ -105,6 +105,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         final Intent camera=new Intent();
         camera.setAction("android.media.action.IMAGE_CAPTURE");
 
+        //内線番号
+        final ExtensionNumber en=new ExtensionNumber();
+
         /*画面遷移*********************************************************************************/
 
         //画面ロングタップ処理
@@ -122,8 +125,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onClick(View view) {
                 //メニュー画面へ遷移
-                //startActivity(new Intent(activity, IwataniMenuActivity.class));
-                startActivity(camera);
+                startActivity(new Intent(activity, IwataniMenuActivity.class));
             }
         });
 
@@ -269,6 +271,498 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 startActivity(camera);
+            }
+        }));
+
+        //「はじめまして」
+        actions.add(new MySimpleAction.Nicetomeetyou(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("はじめましてタピアです",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「おはよう」
+        actions.add(new MySimpleAction.Goodmorning(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("おはようございます いっらっしゃいませ",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「こんにちは」
+        actions.add(new MySimpleAction.Hello(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("こんにちは いっらっしゃいませ",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「こんばんは」
+        actions.add(new MySimpleAction.Goodevening(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("こんばんは 遅くまでお疲れ様です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「ただいま」
+        actions.add(new MySimpleAction.Imhome(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("おかえりなさい　お疲れ様です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「おやすみ」
+        actions.add(new MySimpleAction.Goodnight(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("今日も一日お疲れ様でした",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「サポート」or「ヘルプ」
+        actions.add(new MySimpleAction.Support(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.support; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","サポートデスク");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第一事業部」
+        actions.add(new MySimpleAction.Division1(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo1; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第一事業部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第二事業部」
+        actions.add(new MySimpleAction.Division2(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo2; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第二事業部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第三事業部」
+        actions.add(new MySimpleAction.Division3(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo3; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第三事業部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「技術本部」
+        actions.add(new MySimpleAction.Divisiontech(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.ict; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","技術本部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「管理部」
+        actions.add(new MySimpleAction.Kanri(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kanri; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","管理部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「技術本部-基盤」
+        actions.add(new MySimpleAction.Kiban(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kiban; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","基盤ソリューション部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「技術本部-プロジェクト統轄」
+        actions.add(new MySimpleAction.Tokatu(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.tokatu; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","プロジェクト統轄部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「技術本部-ICT」
+        actions.add(new MySimpleAction.Ict(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.ict; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","ICTソリューション推進部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第一事業部-営業部」
+        actions.add(new MySimpleAction.Eigyo1(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo1; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第一事業部営業部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第二事業部-営業部」
+        actions.add(new MySimpleAction.Eigyo2(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo2; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第二事業部営業部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第三事業部-営業部」
+        actions.add(new MySimpleAction.Eigyo3(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo3; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第三事業部営業部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第一事業部-運用部」
+        actions.add(new MySimpleAction.Unyo1(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.unyo1; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第一事業部運用部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第二事業部-運用部」
+        actions.add(new MySimpleAction.Unyo2(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.unyo2; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第二事業部運用部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第三事業部-運用部」
+        actions.add(new MySimpleAction.Unyo3(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.unyo3; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第三事業部運用部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第一事業部-開発部」
+        actions.add(new MySimpleAction.Kaihatu1(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kaihatu1; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第一事業部開発部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第二事業部-開発部」
+        actions.add(new MySimpleAction.Kaihatu2(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kaihatu2; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第二事業部開発部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
+            }
+        }));
+
+        //「第三事業部-開発部」
+        actions.add(new MySimpleAction.Kaihatu3(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kaihatu3; //内線番号
+                try{
+                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                        //内線番号表示画面へ移動
+                        intentsitei.putExtra("name","第三事業部開発部");
+                        intentsitei.putExtra("number",number);
+                        startActivity(intentsitei);
+                    }
+                });
             }
         }));
 

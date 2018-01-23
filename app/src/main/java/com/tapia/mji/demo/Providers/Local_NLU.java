@@ -71,6 +71,32 @@ public class Local_NLU implements OfflineNLUProvider {
             myKeywords.add(new Keyword(new String[]{"いどう"},MyAction.MyActionType.MOVE));
             myKeywords.add(new Keyword(new String[]{"ニュース"},MyAction.MyActionType.NEWS));
             myKeywords.add(new Keyword(new String[]{"カメラ"},MyAction.MyActionType.CAMERA));
+            myKeywords.add(new Keyword(new String[]{"はじめまして"},MyAction.MyActionType.NICETOMEETYOU));
+            myKeywords.add(new Keyword(new String[]{"おはよう"},MyAction.MyActionType.GOODMORNING));
+            myKeywords.add(new Keyword(new String[]{"こんにちは"},MyAction.MyActionType.HELLO));
+            myKeywords.add(new Keyword(new String[]{"こんばんは"},MyAction.MyActionType.GOODEVENING));
+            myKeywords.add(new Keyword(new String[]{"ただいま"},MyAction.MyActionType.IMHOME));
+            myKeywords.add(new Keyword(new String[]{"おやすみ"},MyAction.MyActionType.GOODNIGHT));
+            myKeywords.add(new Keyword(new String[]{"サポート"},MyAction.MyActionType.SUPPORT));
+            myKeywords.add(new Keyword(new String[]{"ヘルプ"},MyAction.MyActionType.SUPPORT));
+            myKeywords.add(new Keyword(new String[]{"だいいちじぎょうぶ"},MyAction.MyActionType.DIVISION1));
+            myKeywords.add(new Keyword(new String[]{"だいにじぎょうぶ"},MyAction.MyActionType.DIVISION2));
+            myKeywords.add(new Keyword(new String[]{"だいさんじぎょうぶ"},MyAction.MyActionType.DIVISION3));
+            myKeywords.add(new Keyword(new String[]{"ぎじゅつほんぶ"},MyAction.MyActionType.DIVISIONTECH));
+            myKeywords.add(new Keyword(new String[]{"きばん"},MyAction.MyActionType.KIBAN));
+            myKeywords.add(new Keyword(new String[]{"とうかつ"},MyAction.MyActionType.TOKATU));
+            myKeywords.add(new Keyword(new String[]{"プロジェクト"},MyAction.MyActionType.TOKATU));
+            myKeywords.add(new Keyword(new String[]{"ICT"},MyAction.MyActionType.ICT));
+            myKeywords.add(new Keyword(new String[]{"だいいち","えいぎょう"},MyAction.MyActionType.EIGYO1));
+            myKeywords.add(new Keyword(new String[]{"だいに","えいぎょう"},MyAction.MyActionType.EIGYO2));
+            myKeywords.add(new Keyword(new String[]{"だいさん","えいぎょう"},MyAction.MyActionType.EIGYO3));
+            myKeywords.add(new Keyword(new String[]{"だいいち","うんよう"},MyAction.MyActionType.UNYO1));
+            myKeywords.add(new Keyword(new String[]{"だいに","うんよう"},MyAction.MyActionType.UNYO2));
+            myKeywords.add(new Keyword(new String[]{"だいさん","うんよう"},MyAction.MyActionType.UNYO3));
+            myKeywords.add(new Keyword(new String[]{"だいいち","かいはつ"},MyAction.MyActionType.KAIHATU1));
+            myKeywords.add(new Keyword(new String[]{"だいに","かいはつ"},MyAction.MyActionType.KAIHATU2));
+            myKeywords.add(new Keyword(new String[]{"だいさん","かいはつ"},MyAction.MyActionType.KAIHATU3));
+            myKeywords.add(new Keyword(new String[]{"かんりぶ"},MyAction.MyActionType.KANRI));
         }
     }
 
