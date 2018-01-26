@@ -47,7 +47,6 @@ public abstract class MyAction extends Action {
         GIVE_TIME,
         GIVE_DATE,
         BYE,
-        KANDA,
         MOVE,
         WEATHER,
         WEEK,

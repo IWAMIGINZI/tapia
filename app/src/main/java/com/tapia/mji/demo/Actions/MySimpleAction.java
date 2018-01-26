@@ -31,17 +31,6 @@ public abstract class MySimpleAction extends MyAction {
     /**
      * Created by Sami on 12-Jul-16.
      */
-    public static class Bye extends MySimpleAction {
-        public Bye(SimpleAction.OnSimpleActionListener simpleActionListener) {
-            super(simpleActionListener, MyActionType.BYE);
-        }
-    }
-
-    public static class Kanda extends MySimpleAction{
-        public Kanda(SimpleAction.OnSimpleActionListener simpleActionListener){
-            super(simpleActionListener,MyActionType.KANDA);
-        }
-    }
 
     public static class Weather extends MySimpleAction{
         public Weather(SimpleAction.OnSimpleActionListener simpleActionListener){

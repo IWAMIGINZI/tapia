@@ -195,10 +195,7 @@ public class EnvisettingActivity extends TapiaActivity{
         findViewById(R.id.camera).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent=new Intent();
-                intent.setAction("android.media.action.IMAGE_CAPTURE");
-                startActivity(intent);
-                //finish();
+                startActivity(new Intent(activity,CameraActivity.class));
             }
         });
     }

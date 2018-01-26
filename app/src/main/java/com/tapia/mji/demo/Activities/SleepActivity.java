@@ -82,6 +82,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         //内線番号表示用
         final Intent intentsitei = new Intent(activity, NaisenKakudaiSiteiActivity.class);
+        final ExtensionNumber en=new ExtensionNumber();
+        final NumberSplit ns=new NumberSplit();
 
         //現在の日時を取得
         Calendar cal=Calendar.getInstance();
@@ -93,20 +95,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         //Log.v("テスト",);
         //Log.v("テスト",month+"月" +day+"日");
 
-        //天気(ウェブページ)
-        Uri uri_weather=Uri.parse("https://weather.yahoo.co.jp/weather/");
-        final Intent weather=new Intent(Intent.ACTION_VIEW,uri_weather);
-
-        //ニュース(ウェブページ)
-        Uri uri_news=Uri.parse("https://news.yahoo.co.jp/");
-        final Intent news=new Intent(Intent.ACTION_VIEW,uri_news);
-
-        //カメラ起動
-        final Intent camera=new Intent();
-        camera.setAction("android.media.action.IMAGE_CAPTURE");
-
-        //内線番号
-        final ExtensionNumber en=new ExtensionNumber();
+        //ブラウザ表示画面
+        final Intent browser=new Intent(activity,BrowserActivity.class);
 
         /*画面遷移*********************************************************************************/
 
@@ -125,7 +115,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onClick(View view) {
                 //メニュー画面へ遷移
-                startActivity(new Intent(activity, IwataniMenuActivity.class));
+                //startActivity(new Intent(activity, IwataniMenuActivity.class));
+                browser.putExtra("flag","1");
+                startActivity(browser);
             }
         });
 
@@ -154,34 +146,12 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         /*音声認識*********************************************************************************/
 
-        //「神田」
-        actions.add(new MySimpleAction.Kanda(new SimpleAction.OnSimpleActionListener(){
-            @Override
-            public void onSimpleAction(){
-                final String number="5102"; //内線番号
-                try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
-                }catch(LanguageNotSupportedException e){
-                    e.printStackTrace();
-                }
-                //終話後の処理
-                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
-                    @Override
-                    public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","神田");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
-                    }
-                });
-            }
-        }));
-
         //「天気」
         actions.add(new MySimpleAction.Weather(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
-                startActivity(weather);
+                browser.putExtra("flag","1");
+                startActivity(browser);
             }
         }));
 
@@ -189,7 +159,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         actions.add(new MySimpleAction.News(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
-                startActivity(news);
+                browser.putExtra("flag","2");
+                startActivity(browser);
             }
         }));
 
@@ -203,7 +174,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                     e.printStackTrace();
                 }
                 ttsProvider.setOnSpeechCompleteListener(null);
-                startActivity(new Intent(activity, IwataniMenuActivity.class));
             }
         }));
 
@@ -270,7 +240,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         actions.add(new MySimpleAction.Camera(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
-                startActivity(camera);
+                startActivity(new Intent(activity,CameraActivity.class));
             }
         }));
 
@@ -292,7 +262,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 try{
-                    ttsProvider.ask("おはようございます いっらっしゃいませ",sttProvider);
+                    ttsProvider.ask("おはようございます いらっしゃいませ",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -305,7 +275,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 try{
-                    ttsProvider.ask("こんにちは いっらっしゃいませ",sttProvider);
+                    ttsProvider.ask("こんにちは いらっしゃいませ",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -357,20 +327,16 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.support; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
                 //終話後の処理
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
-                    public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","サポートデスク");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
-                    }
+                    public void onSpeechComplete() {}
                 });
             }
         }));
@@ -380,8 +346,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.eigyo1; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -389,10 +356,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第一事業部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -403,8 +366,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.eigyo2; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -412,10 +376,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第二事業部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -426,8 +386,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.eigyo3; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -435,10 +396,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第三事業部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -449,8 +406,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.ict; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -458,10 +416,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","技術本部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -472,8 +426,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.kanri; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -481,10 +436,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","管理部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -495,8 +446,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.kiban; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -504,10 +456,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","基盤ソリューション部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -518,8 +466,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.tokatu; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -527,10 +476,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","プロジェクト統轄部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -541,8 +486,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.ict; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -550,10 +496,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","ICTソリューション推進部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -564,8 +506,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.eigyo1; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -573,10 +516,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第一事業部営業部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -587,8 +526,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.eigyo2; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -596,10 +536,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第二事業部営業部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -610,8 +546,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.eigyo3; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -619,10 +556,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第三事業部営業部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -633,8 +566,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.unyo1; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -642,10 +576,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第一事業部運用部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -656,8 +586,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.unyo2; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -665,10 +596,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第二事業部運用部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -679,8 +606,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.unyo3; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -688,10 +616,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第三事業部運用部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -702,8 +626,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.kaihatu1; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -711,10 +636,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第一事業部開発部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -725,8 +646,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.kaihatu2; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -734,10 +656,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第二事業部開発部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -748,8 +666,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onSimpleAction(){
                 final String number=en.kaihatu3; //内線番号
+                String new_number=ns.Execution(number);
                 try{
-                    ttsProvider.ask("内線番号は"+number+"です",sttProvider);
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -757,10 +676,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
                     @Override
                     public void onSpeechComplete() {
-                        //内線番号表示画面へ移動
-                        intentsitei.putExtra("name","第三事業部開発部");
-                        intentsitei.putExtra("number",number);
-                        startActivity(intentsitei);
                     }
                 });
             }
@@ -805,7 +720,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         }
 
         //タイマキャンセル
-        //timer.cancel();   /*←Animationストップがあれば必要ない？重くならないかテスト中*/
+        timer.cancel();
 
         //音のする方向へ動く処理のキャンセル
         //stopSoundLocation(this);
