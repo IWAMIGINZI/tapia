@@ -115,9 +115,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             @Override
             public void onClick(View view) {
                 //メニュー画面へ遷移
-                //startActivity(new Intent(activity, IwataniMenuActivity.class));
-                browser.putExtra("flag","1");
-                startActivity(browser);
+                startActivity(new Intent(activity, IwataniMenuActivity.class));
             }
         });
 
