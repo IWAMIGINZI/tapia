@@ -76,5 +76,6 @@ public abstract class MyAction extends Action {
         KAIHATU2,
         KAIHATU3,
         KANRI,
+        ENTER_ROOM
     }
 }

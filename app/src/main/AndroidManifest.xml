@@ -62,12 +62,17 @@
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.NaisenKakudaiSiteiActivity"/>
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.BrowserActivity"/>
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.CameraActivity"/>
-
-
+        <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.EnterRoomActivity"/>
 
         <meta-data
             android:name="license_key"
-            android:value="a9*SROZV0F7CGYSSFH01cc/?PAPa(HSE" />
+            android:value="ZQ*M5A(IVa/GF8GC)X/MR)PTRbA8TTP9" />
+        <meta-data
+            android:name="labellio_api_url"
+            android:value="http://ec2-34-198-238-4.compute-1.amazonaws.com/l4f/api" />
+        <meta-data
+            android:name="labellio_access_key"
+            android:value="25e06caa-db06-4029-8346-e983d8ff57f5" />
     </application>
 
 </manifest>

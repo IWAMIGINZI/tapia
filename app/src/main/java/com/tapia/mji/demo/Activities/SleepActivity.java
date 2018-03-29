@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -111,14 +112,20 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         });
 
         //画面タップ処理
+//        tapiaEyes.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                //メニュー画面へ遷移
+//                startActivity(new Intent(activity, IwataniMenuActivity.class));
+//            }
+//        });
+
         tapiaEyes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //メニュー画面へ遷移
-                startActivity(new Intent(activity, IwataniMenuActivity.class));
+                startActivity(new Intent(activity, EnterRoomActivity.class));
             }
         });
-
 /*
         sttProvider.listen();   //録音の開始
 
@@ -705,6 +712,13 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 });
             }
         });
+
+        actions.add(new MySimpleAction.EnterRoom(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                startActivity(new Intent(activity,EnterRoomActivity.class));
+            }
+        }));
     }
 
     //Activity終了の際呼ばれる

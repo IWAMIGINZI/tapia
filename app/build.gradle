@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.tapia.mji.demo"
         minSdkVersion 21
@@ -27,12 +27,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.github.kenglxn.QRGen:android:2.1.0'
-    compile 'com.loopj.android:android-async-http:1.4.9'
-    compile 'org.apache.directory.studio:org.apache.commons.io:2.4'
-    //compile 'com.tapia.mji:tapialib:1.0.7'
-    compile project(':tapialib_1.0.3')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:23.0.0'
+    implementation 'com.github.kenglxn.QRGen:android:2.1.0'
+    implementation 'com.loopj.android:android-async-http:1.4.9'
+    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
+    implementation 'com.tapia.mji:tapialib:1.0.7'
 }
