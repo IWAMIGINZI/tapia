@@ -28,7 +28,10 @@ import com.tapia.mji.demo.R;
 public class CameraActivity extends Activity{
     private Camera mCam = null;
     private CameraPreview mCamPreview = null;
+    //二度押し禁止フラグ
     private boolean mIsTake=false;
+
+    Timelag timelag=new Timelag();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +45,12 @@ public class CameraActivity extends Activity{
             this.finish();
         }
 
+        //カメラプレビュー画面の呼び出し
         FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
         mCamPreview = new CameraPreview(this, mCam);
         preview.addView(mCamPreview);
 
+        //プレビュー画面をタッチした時の処理
         mCamPreview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
@@ -53,6 +58,7 @@ public class CameraActivity extends Activity{
                     return true;
                 }
 
+                //オートフォーカス後撮影する
                 if(event.getAction()==MotionEvent.ACTION_DOWN){
                     mIsTake=true;
                     mCam.autoFocus(mAutoFocuslistener);
@@ -70,12 +76,15 @@ public class CameraActivity extends Activity{
             mCam.release();
             mCam = null;
         }
+
+        timelag.cancel();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
 
+        //ナビゲーションバー非表示処理
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
             findViewById(R.id.cameraPreview).setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
@@ -85,6 +94,8 @@ public class CameraActivity extends Activity{
         }else{
             findViewById(R.id.cameraPreview).setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
+
+        timelag.setting(timelag.move(this));
     }
 
     private  Camera.PictureCallback mPicJpgListener=new Camera.PictureCallback(){
@@ -93,7 +104,8 @@ public class CameraActivity extends Activity{
                 return;
             }
 
-            String saveDir= Environment.getExternalStorageDirectory().getPath()+"/tapia";
+            //画像を保存するフォルダ名の設定
+            String saveDir= Environment.getExternalStorageDirectory().getPath()+"/test";
 
             File file=new File(saveDir);
 
@@ -103,10 +115,12 @@ public class CameraActivity extends Activity{
                 }
             }
 
+            //画像を保存するファイル名の設定
             Calendar cal=Calendar.getInstance();
             SimpleDateFormat sf=new SimpleDateFormat("yyyyMMdd_HHmmss");
             String imgPath=saveDir+"/"+sf.format(cal.getTime())+".jpg";
 
+            //画像をandroidのギャラリーに保存する
             FileOutputStream fos;
             try{
                 fos=new FileOutputStream(imgPath,true);
@@ -125,6 +139,7 @@ public class CameraActivity extends Activity{
         }
     };
 
+    //androidのギャラリーに保存する処理
     private void registAndroidDB(String path){
         ContentValues values=new ContentValues();
         ContentResolver contentResolver=this.getContentResolver();
@@ -133,6 +148,7 @@ public class CameraActivity extends Activity{
         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
     }
 
+    //オートフォーカス設定
     private Camera.AutoFocusCallback mAutoFocuslistener=new Camera.AutoFocusCallback(){
         public void onAutoFocus(boolean success,Camera camera){
             mCam.takePicture(null,null,mPicJpgListener);

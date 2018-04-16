@@ -50,12 +50,6 @@ public abstract class MySimpleAction extends MyAction {
         }
     }
 
-    public static class Move extends MySimpleAction{
-        public Move(SimpleAction.OnSimpleActionListener simpleActionListener){
-            super(simpleActionListener,MyActionType.MOVE);
-        }
-    }
-
     public static class Week extends MySimpleAction{
         public Week(SimpleAction.OnSimpleActionListener simpleActionListener){
             super(simpleActionListener,MyActionType.WEEK);
@@ -215,6 +209,12 @@ public abstract class MySimpleAction extends MyAction {
     public static class Kanri extends MySimpleAction{
         public Kanri(SimpleAction.OnSimpleActionListener simpleActionListener){
             super(simpleActionListener,MyActionType.KANRI);
+        }
+    }
+
+    public static class Fortune extends MySimpleAction{
+        public Fortune(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.FORTUNE);
         }
     }
 
