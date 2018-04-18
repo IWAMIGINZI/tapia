@@ -4,15 +4,17 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -20,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import com.tapia.mji.demo.Labellio.AnalyzerRecognitionSync;
 import com.tapia.mji.demo.R;
@@ -30,13 +33,15 @@ import org.json.JSONObject;
 public class EnterRoomActivity extends Activity {
     private Camera camera = null;
     private CameraPreview cameraPreview = null;
-    private boolean isTake = false;
     AnalyzerRecognitionSync ars;
     JSONObject json;
+    Activity forOther;
+    Handler handler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        forOther = this;
         setContentView(R.layout.activity_camera);
 
         int cameraIndex = -1;
@@ -60,22 +65,25 @@ public class EnterRoomActivity extends Activity {
             FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
             cameraPreview = new CameraPreview(this, camera);
             preview.addView(cameraPreview);
-
-            cameraPreview.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent event) {
-                    if (isTake) {
-                        return true;
-                    }
-
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        isTake = true;
-                        camera.autoFocus(autoFocusCallback);
-                    }
-                    return true;
-                }
-            });
         }
+        ApplicationInfo appliInfo = null;
+        int wait_msec = 1000;
+        try {
+            appliInfo = getApplicationContext().getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
+            wait_msec = Integer.parseInt(appliInfo.metaData.getString("camera_scan_interval"));
+        } catch (PackageManager.NameNotFoundException e) {
+        } catch (NumberFormatException e) {
+        }
+
+        handler = new Handler();
+        final Runnable r = new Runnable() {
+            int count = 0;
+            @Override
+            public void run() {
+                camera.autoFocus(autoFocusCallback);
+            }
+        };
+        handler.postDelayed(r, wait_msec);
     }
 
     @Override
@@ -104,7 +112,7 @@ public class EnterRoomActivity extends Activity {
 
     private Camera.AutoFocusCallback autoFocusCallback = new Camera.AutoFocusCallback() {
         public void onAutoFocus(boolean success, Camera camera) {
-        camera.takePicture(null, null, pictureCallback);
+            camera.takePicture(null, null, pictureCallback);
         }
     };
 
@@ -139,6 +147,7 @@ public class EnterRoomActivity extends Activity {
                 ars.setImageParameter("FRAME_JPG_B64", imgPath);
                 ars.setParameter("FRAME_KEY", timeString);
                 new AsyncCaller().execute();
+                startActivity(new Intent(forOther, SleepActivity.class));
             } catch (Exception e) {
                 Log.e("EnterRoom::picture", e.getMessage());
             }
@@ -146,8 +155,6 @@ public class EnterRoomActivity extends Activity {
             fos = null;
 
             camera.startPreview();
-
-            isTake = false;
         }
     };
 

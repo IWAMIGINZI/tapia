@@ -1,12 +1,15 @@
 package com.tapia.mji.demo.Activities;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +50,10 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     //アニメーション切り替え用
     Timer timer = new Timer();
     int time = 60000;
+
+    // 定期実行用ハンドラ
+    Handler handler = null;
+
 
     TTSProvider.OnStateChangeListener onTTSstateListener;
 
@@ -112,20 +119,20 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         });
 
         //画面タップ処理
-//        tapiaEyes.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                //メニュー画面へ遷移
-//                startActivity(new Intent(activity, IwataniMenuActivity.class));
-//            }
-//        });
-
         tapiaEyes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activity, EnterRoomActivity.class));
+                //メニュー画面へ遷移
+                startActivity(new Intent(activity, IwataniMenuActivity.class));
             }
         });
+
+//        tapiaEyes.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startActivity(new Intent(activity, EnterRoomActivity.class));
+//            }
+//        });
 /*
         sttProvider.listen();   //録音の開始
 
@@ -716,9 +723,29 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         actions.add(new MySimpleAction.EnterRoom(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
-                startActivity(new Intent(activity,EnterRoomActivity.class));
+                startActivity(new Intent(activity, EnterRoomActivity.class));
             }
         }));
+        ApplicationInfo appliInfo = null;
+        int wait_msec = 1000;
+        try {
+            appliInfo = getApplicationContext().getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
+            String temp = appliInfo.metaData.getString("camera_scan_interval");
+            wait_msec = Integer.parseInt(appliInfo.metaData.getString("camera_scan_interval"));
+        } catch (PackageManager.NameNotFoundException e) {
+        } catch (NumberFormatException e) {
+        }
+
+        handler = new Handler();
+        final Runnable r = new Runnable() {
+            int count = 0;
+            @Override
+            public void run() {
+                Log.d("enterRoomTimer", "come here!");
+                startActivity(new Intent(activity, EnterRoomActivity.class));
+            }
+        };
+        handler.postDelayed(r, wait_msec);
     }
 
     //Activity終了の際呼ばれる
@@ -733,7 +760,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         //タイマキャンセル
         timer.cancel();
-
+        handler = null;
         //音のする方向へ動く処理のキャンセル
         //stopSoundLocation(this);
     }
@@ -910,6 +937,3 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     }
 
 }
-
-
-

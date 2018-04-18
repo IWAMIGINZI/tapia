@@ -14,6 +14,6 @@ public class ImageEncoder extends Encoder {
         byte[] data = new byte[fileLen];
         FileInputStream fis = new FileInputStream(file);
         fis.read(data);
-        return Base64.encodeToString(data, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP);
+        return Base64.encodeToString(data, Base64.DEFAULT | Base64.NO_WRAP);
     }
 }

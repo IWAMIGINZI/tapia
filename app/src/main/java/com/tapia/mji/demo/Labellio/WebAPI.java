@@ -83,6 +83,7 @@ public class WebAPI {
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             String json = getJSON();
+            Log.d("Request JSON", json);
             con.setRequestProperty("Content-Length", String.valueOf(json.length()));
             OutputStream os = con.getOutputStream();
             PrintStream ps = new PrintStream(os);
@@ -108,12 +109,10 @@ public class WebAPI {
             } else {
                 Log.d("WebAPI::HTTP RESPONSE", String.valueOf(status));
             }
-
         } catch (Exception e1) {
             Log.e("WebAPI::Exception", e1.getMessage());
         } finally {
             if (con != null) {
-                // コネクションを切断
                 con.disconnect();
             }
         }

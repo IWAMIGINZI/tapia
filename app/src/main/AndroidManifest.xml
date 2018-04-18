@@ -73,6 +73,9 @@
         <meta-data
             android:name="labellio_access_key"
             android:value="25e06caa-db06-4029-8346-e983d8ff57f5" />
+        <meta-data
+            android:name="camera_scan_interval"
+            android:value="10000" />
     </application>
 
 </manifest>
