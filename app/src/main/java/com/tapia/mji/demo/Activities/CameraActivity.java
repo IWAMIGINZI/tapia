@@ -43,7 +43,7 @@ public class CameraActivity extends Activity{
         }
 
         FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
-        mCamPreview = new CameraPreview(this, mCam);
+        mCamPreview = new CameraPreview(this, -1);
         preview.addView(mCamPreview);
 
         mCamPreview.setOnTouchListener(new View.OnTouchListener() {

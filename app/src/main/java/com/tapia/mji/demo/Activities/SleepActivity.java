@@ -16,7 +16,10 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.tapia.mji.demo.Actions.MySimpleAction;
+import com.tapia.mji.demo.Actions.SoundDetect;
 import com.tapia.mji.demo.R;
+import com.tapia.mji.demo.Tools.LockedWork;
+import com.tapia.mji.demo.Tools.Locker;
 import com.tapia.mji.tapialib.Actions.Action;
 import com.tapia.mji.tapialib.Actions.SimpleAction;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
@@ -41,7 +44,7 @@ import java.util.TimerTask;
 /**
  * Created by Sami on 12-Jul-16.
  */
-public class SleepActivity extends TapiaActivity implements SensorEventListener {
+public class SleepActivity extends TapiaActivity implements SensorEventListener, LockedWork {
     TapiaAnimation[] tapiaAnimation = new TapiaAnimation[14];
 
     //センサマネージャの取得
@@ -51,11 +54,10 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     Timer timer = new Timer();
     int time = 60000;
 
-    // 定期実行用ハンドラ
-    Handler handler = null;
-
-
-    TTSProvider.OnStateChangeListener onTTSstateListener;
+    // TTSProvider.OnStateChangeListener onTTSstateListener;
+    SoundDetect mSoundDetect;
+    Handler mHandler = new Handler();
+    SleepActivity useForOuterClassActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         /*宣言部***********************************************************************************/
 
+        useForOuterClassActivity = this;
         //待機画面表示
         setContentView(R.layout.eyes_layout);
 
@@ -81,12 +84,12 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         }
 
         //会話
-        TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
-        sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
-        ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
-        offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
+        //TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
+        //sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
+        //ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
+        //offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
         final ArrayList actions=new ArrayList<>();
-        sttProvider.listen();   //録音の開始
+        //sttProvider.listen();   //録音の開始
 
         //内線番号表示用
         final Intent intentsitei = new Intent(activity, NaisenKakudaiSiteiActivity.class);
@@ -694,7 +697,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         }));
 
         //録音認識完了
-        sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
+        /*sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
             @Override
             public void onRecognitionComplete(List<String> list){
                 offlineNLUProvider.setOnAnalyseCompleteListener(new NLUProvider.OnAnalyseCompleteListener() {
@@ -713,39 +716,21 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
                     @Override
                     public void onSpeechComplete(){
-                        sttProvider.listen();
+                        //sttProvider.listen();
                         //sttProvider.stopListening();
                     }
                 });
             }
-        });
+        });*/
 
-        actions.add(new MySimpleAction.EnterRoom(new SimpleAction.OnSimpleActionListener(){
-            @Override
-            public void onSimpleAction(){
-                startActivity(new Intent(activity, EnterRoomActivity.class));
-            }
-        }));
         ApplicationInfo appliInfo = null;
         int wait_msec = 1000;
         try {
             appliInfo = getApplicationContext().getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
-            String temp = appliInfo.metaData.getString("camera_scan_interval");
-            wait_msec = Integer.parseInt(appliInfo.metaData.getString("camera_scan_interval"));
+            wait_msec = appliInfo.metaData.getInt("camera_scan_interval");
         } catch (PackageManager.NameNotFoundException e) {
         } catch (NumberFormatException e) {
         }
-
-        handler = new Handler();
-        final Runnable r = new Runnable() {
-            int count = 0;
-            @Override
-            public void run() {
-                Log.d("enterRoomTimer", "come here!");
-                startActivity(new Intent(activity, EnterRoomActivity.class));
-            }
-        };
-        handler.postDelayed(r, wait_msec);
     }
 
     //Activity終了の際呼ばれる
@@ -760,9 +745,12 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         //タイマキャンセル
         timer.cancel();
-        handler = null;
         //音のする方向へ動く処理のキャンセル
         //stopSoundLocation(this);
+
+        // 音声検出スレッド停止
+        mSoundDetect.stop();
+        Locker.whenMedamaWorking(this);
     }
 
 
@@ -778,6 +766,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     @Override
     protected void onResume() {
         super.onResume();
+
+        Locker.whenMedamaWorking(this);
 
         //音のする方向へ回転
         //startSoundLocation(this);
@@ -911,6 +901,23 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             }
         }, 0, time);
 
+        mSoundDetect = new SoundDetect();
+// リスナーを登録して音を感知できるように
+        mSoundDetect.setOnVolumeReachedListener(
+                new SoundDetect.OnReachedVolumeListener() {
+                    // 音を感知したら呼び出される
+                    public void onReachedVolume(short volume) {
+// 別スレッドからUIスレッドに要求するのでHandler.postでエラー回避
+                        mHandler.post(new Runnable() {//Runnableに入った要求を順番にLoopでrunを呼び出し処理
+                            public void run() {
+                                useForOuterClassActivity.startActivity(new Intent(useForOuterClassActivity.activity, EnterRoomActivity.class));
+                            }
+                        });
+                    }
+                });
+// 別スレッドとしてSoundSwitchを開始（録音を開始）
+        new Thread(mSoundDetect).start();
+
         //近接センサ登録
         List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_PROXIMITY);
         if (sensors.size() > 0) {
@@ -936,4 +943,11 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         }
     }
 
+    public void work() {
+        Locker.setWorker(Locker.WORKER_DEFAULT);
+    }
+
+    public void workElse() {
+        Locker.setWorker(Locker.WORKER_MEDAMA);
+    }
 }

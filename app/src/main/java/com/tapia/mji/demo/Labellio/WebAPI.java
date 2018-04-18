@@ -52,22 +52,29 @@ public class WebAPI {
     }
 
     public String getJSON() {
-        StringBuilder sb = new StringBuilder();
-        sb.append('{');
-        boolean first = true;
+        JSONObject obj = new JSONObject();
         for (String key: params.keySet()) {
-            if (!first) {
-                sb.append(", ");
+            int pos = key.indexOf('/');
+            try {
+                if (pos < 0) {
+                    obj.put(key, params.get(key));
+                } else {
+                    String subkey = key.substring(pos + 1);
+                    String mainkey = key.substring(0, pos);
+                    JSONObject sub = null;
+                    if (obj.has(mainkey)) {
+                        sub = obj.getJSONObject(mainkey);
+                    } else {
+                        sub = new JSONObject();
+                    }
+                    sub.put(subkey, params.get(key));
+                    obj.put(mainkey, sub);
+                }
+            } catch (JSONException e) {
+                Log.d("tapia", "JSONObject");
             }
-            sb.append('"');
-            sb.append(key);
-            sb.append("\": \"");
-            sb.append(params.get(key));
-            sb.append('"');
-            first = false;
         }
-        sb.append('}');
-        return sb.toString();
+        return obj.toString();
     }
 
     public JSONObject post() throws JSONException {

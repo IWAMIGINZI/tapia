@@ -75,7 +75,10 @@
             android:value="25e06caa-db06-4029-8346-e983d8ff57f5" />
         <meta-data
             android:name="camera_scan_interval"
-            android:value="10000" />
+            android:value="2000" />
+        <meta-data
+            android:name="fire_volume_threshold"
+            android:value="2000" />
     </application>
 
 </manifest>

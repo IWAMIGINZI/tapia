@@ -26,12 +26,13 @@ import java.util.HashMap;
 
 import com.tapia.mji.demo.Labellio.AnalyzerRecognitionSync;
 import com.tapia.mji.demo.R;
+import com.tapia.mji.demo.Tools.Locker;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class EnterRoomActivity extends Activity {
-    private Camera camera = null;
     private CameraPreview cameraPreview = null;
     AnalyzerRecognitionSync ars;
     JSONObject json;
@@ -41,6 +42,12 @@ public class EnterRoomActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         forOther = this;
         setContentView(R.layout.activity_camera);
 
@@ -57,20 +64,15 @@ public class EnterRoomActivity extends Activity {
             }
         }
         if (!(cameraIndex < 0)) {
-            try {
-                camera = Camera.open(cameraIndex);
-            } catch (Exception e) {
-                this.finish();
-            }
             FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
-            cameraPreview = new CameraPreview(this, camera);
+            cameraPreview = new CameraPreview(this, cameraIndex);
             preview.addView(cameraPreview);
         }
         ApplicationInfo appliInfo = null;
         int wait_msec = 1000;
         try {
             appliInfo = getApplicationContext().getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
-            wait_msec = Integer.parseInt(appliInfo.metaData.getString("camera_scan_interval"));
+            wait_msec = appliInfo.metaData.getInt("camera_scan_interval");
         } catch (PackageManager.NameNotFoundException e) {
         } catch (NumberFormatException e) {
         }
@@ -80,24 +82,19 @@ public class EnterRoomActivity extends Activity {
             int count = 0;
             @Override
             public void run() {
-                camera.autoFocus(autoFocusCallback);
+                if (cameraPreview != null) {
+                    Camera camera = cameraPreview.getCamera();
+                    if (camera != null) {
+                        try {
+                            camera.autoFocus(autoFocusCallback);
+                        } catch (RuntimeException e) {
+                            Log.d("tapia", "autoFocusFailed");
+                        }
+                    }
+                }
             }
         };
         handler.postDelayed(r, wait_msec);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (camera != null) {
-            camera.release();
-            camera = null;
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             findViewById(R.id.cameraPreview).setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -110,9 +107,18 @@ public class EnterRoomActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
     private Camera.AutoFocusCallback autoFocusCallback = new Camera.AutoFocusCallback() {
         public void onAutoFocus(boolean success, Camera camera) {
-            camera.takePicture(null, null, pictureCallback);
+            try {
+                camera.takePicture(null, null, pictureCallback);
+            } catch(RuntimeException e) {
+                Log.d("tapia", "onAutoFocus");
+            }
         }
     };
 
@@ -144,8 +150,8 @@ public class EnterRoomActivity extends Activity {
                 fos.close();
                 registAndroidDB(imgPath);
                 ars = new AnalyzerRecognitionSync(getApplicationContext());
-                ars.setImageParameter("FRAME_JPG_B64", imgPath);
-                ars.setParameter("FRAME_KEY", timeString);
+                ars.setImageParameter("MSG/FRAME_JPG_B64", imgPath);
+                ars.setParameter("MSG/FRAME_KEY", timeString);
                 new AsyncCaller().execute();
                 startActivity(new Intent(forOther, SleepActivity.class));
             } catch (Exception e) {
@@ -154,7 +160,7 @@ public class EnterRoomActivity extends Activity {
 
             fos = null;
 
-            camera.startPreview();
+            cameraPreview.getCamera().startPreview();
         }
     };
 
@@ -180,10 +186,62 @@ public class EnterRoomActivity extends Activity {
         protected Void doInBackground(Void... params) {
             try {
                 json = ars.post();
+                String jsons = json.toString();
+                Log.d("tapia", jsons);
+                actionRecognition(json);
             } catch (JSONException e) {
                 Log.e("JSONException", e.getMessage());
             }
             return null;
+        }
+
+        private void actionRecognition(JSONObject json) {
+            try {
+                if (json.getInt("STATUS") == 0) {
+                    JSONObject result = json.getJSONObject("RESULT");
+                    actionRecognitionResult(result);
+                } else {
+                    Log.d("tapia", "検出失敗");
+                }
+            } catch (JSONException e) {
+                Log.d("tapia", "JSONException in actionRecognition");
+            }
+        }
+
+        private void actionRecognitionResult(JSONObject result) {
+            try {
+                if (result.has("FACE")) {
+                    actionRecognitionFace(result.getJSONArray("FACE"));
+                }
+            } catch (JSONException e) {
+                Log.d("tapia", "JSONException in actionRecognitionResult");
+            }
+        }
+
+        private void actionRecognitionFace(JSONArray faces) {
+            try {
+                for (int i = 0; i < faces.length(); i++) {
+                    JSONObject face = faces.getJSONObject(i);
+                    if (face.has("PERSON_CODE")) {
+                        actionOpenSesami(face);
+                    }
+                }
+            } catch (JSONException e) {
+                Log.d("tapia", "JSONException in actionRecognitionFace");
+            }
+        }
+
+        private void actionOpenSesami(JSONObject face) {
+            try {
+                String code = face.getString("PERSON_CODE");
+                String name = "";
+                if (face.has("PERSON_NAME")) {
+                    name = face.getString("PERSON_NAME");
+                }
+                // do open sesami!!
+            } catch (JSONException e) {
+                Log.d("tapia", "JSONException in actionOpenSesami");
+            }
         }
     }
 }
