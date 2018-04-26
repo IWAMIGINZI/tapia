@@ -57,7 +57,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
     // TTSProvider.OnStateChangeListener onTTSstateListener;
     SoundDetect mSoundDetect;
     Handler mHandler = new Handler();
-    SleepActivity useForOuterClassActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +64,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
 
         /*宣言部***********************************************************************************/
 
-        useForOuterClassActivity = this;
         //待機画面表示
         setContentView(R.layout.eyes_layout);
 
@@ -133,12 +131,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
             }
         });
 
-//        tapiaEyes.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startActivity(new Intent(activity, EnterRoomActivity.class));
-//            }
-//        });
 /*
         sttProvider.listen();   //録音の開始
 
@@ -917,7 +909,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
 // 別スレッドからUIスレッドに要求するのでHandler.postでエラー回避
                         mHandler.post(new Runnable() {//Runnableに入った要求を順番にLoopでrunを呼び出し処理
                             public void run() {
-                                useForOuterClassActivity.startActivity(new Intent(useForOuterClassActivity.activity, EnterRoomActivity.class));
+                                onVolumeReached();
                             }
                         });
                     }
@@ -931,6 +923,10 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
             Sensor s = sensors.get(0);
             sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
         }
+    }
+
+    public void onVolumeReached() {
+        startActivity(new Intent(activity, EnterRoomActivity.class));
     }
 
     @Override

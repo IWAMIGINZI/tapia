@@ -5,8 +5,10 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import com.tapia.mji.demo.Activities.SleepActivity;
 import com.tapia.mji.demo.Tools.LockedWork;
 import com.tapia.mji.demo.Tools.Locker;
+import com.tapia.mji.tapialib.Activities.TapiaActivity;
 
 public class SoundDetect implements Runnable, LockedWork {
     // ボリューム感知リスナー
@@ -17,6 +19,7 @@ public class SoundDetect implements Runnable, LockedWork {
     private static final int SAMPLE_RATE = 8000;//80.0KHz
     // ボーダー音量
     private short mBorderVolume = 2000;
+
     // ボーダー音量をセット
     public void setBorderVolume(short volume) {
         mBorderVolume = volume;

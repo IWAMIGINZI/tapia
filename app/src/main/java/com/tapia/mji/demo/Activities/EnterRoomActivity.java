@@ -27,17 +27,17 @@ import java.util.HashMap;
 import com.tapia.mji.demo.Labellio.AnalyzerRecognitionSync;
 import com.tapia.mji.demo.R;
 import com.tapia.mji.demo.Tools.Locker;
+import com.tapia.mji.tapialib.Activities.TapiaActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class EnterRoomActivity extends Activity {
+public class EnterRoomActivity extends TapiaActivity {
     private CameraPreview cameraPreview = null;
     AnalyzerRecognitionSync ars;
     JSONObject json;
-    Activity forOther;
-    Handler handler = null;
+    Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,6 @@ public class EnterRoomActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        forOther = this;
         setContentView(R.layout.activity_camera);
 
         int cameraIndex = -1;
@@ -77,7 +76,6 @@ public class EnterRoomActivity extends Activity {
         } catch (NumberFormatException e) {
         }
 
-        handler = new Handler();
         final Runnable r = new Runnable() {
             int count = 0;
             @Override
@@ -110,6 +108,7 @@ public class EnterRoomActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        cameraPreview = null;
     }
 
     private Camera.AutoFocusCallback autoFocusCallback = new Camera.AutoFocusCallback() {
@@ -153,16 +152,22 @@ public class EnterRoomActivity extends Activity {
                 ars.setImageParameter("MSG/FRAME_JPG_B64", imgPath);
                 ars.setParameter("MSG/FRAME_KEY", timeString);
                 new AsyncCaller().execute();
-                startActivity(new Intent(forOther, SleepActivity.class));
+                handler.post(new Runnable() {
+                    public void run() {
+                        onCompleteRecognition();
+                    }
+                });
             } catch (Exception e) {
                 Log.e("EnterRoom::picture", e.getMessage());
             }
 
             fos = null;
-
-            cameraPreview.getCamera().startPreview();
         }
     };
+
+    public void onCompleteRecognition() {
+        startActivity(new Intent(activity, SleepActivity.class));
+    }
 
     private void registAndroidDB(String path) {
         ContentValues values = new ContentValues();
