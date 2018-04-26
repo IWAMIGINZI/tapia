@@ -59,7 +59,7 @@
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.NaisenKakudaiActivity"/>
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.EnvisettingActivity"/>
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.NaisenActivity_2"/>
-        <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.NaisenKakudaiSiteiActivity"/>
+        <!--<activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.NaisenKakudaiSiteiActivity"/>-->
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.BrowserActivity"/>
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.CameraActivity"/>
         <activity android:configChanges="locale" android:screenOrientation="landscape" android:name=".Activities.EnterRoomActivity"/>

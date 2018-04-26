@@ -46,8 +46,6 @@ public abstract class MyAction extends Action {
         ROTATE,
         GIVE_TIME,
         GIVE_DATE,
-        BYE,
-        MOVE,
         WEATHER,
         WEEK,
         NEWS,
@@ -76,6 +74,7 @@ public abstract class MyAction extends Action {
         KAIHATU2,
         KAIHATU3,
         KANRI,
-        ENTER_ROOM
+        ENTER_ROOM,
+        FORTUNE
     }
 }

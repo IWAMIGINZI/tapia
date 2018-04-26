@@ -53,10 +53,6 @@ public class EnvisettingActivity extends TapiaActivity{
         //パーツ宣言
         Button finish=(Button)findViewById(R.id.finish);
 
-        //yahooに繋ぐ
-        Uri uri=Uri.parse("https://www.yahoo.co.jp");
-        final Intent yahoo=new Intent(Intent.ACTION_VIEW,uri);
-
         /*音量設定*********************************************************************************/
 
         //minusボタン押下
@@ -176,26 +172,6 @@ public class EnvisettingActivity extends TapiaActivity{
                 //1つ前の画面に戻る
                 /*SleepActivityのTimerを作動させる為,startActivityでの遷移*/
                 startActivity(new Intent(activity,SleepActivity.class));
-            }
-        });
-
-        /*yahooへリンク(試験的に実装)**************************************************************/
-
-        //「Y」ボタン押下
-        findViewById(R.id.browser).setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                startActivity(yahoo);
-            }
-        });
-
-        /*カメラ起動(試験的に実装)**************************************************************/
-
-        //「camera」ボタン押下
-        findViewById(R.id.camera).setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                startActivity(new Intent(activity,CameraActivity.class));
             }
         });
     }

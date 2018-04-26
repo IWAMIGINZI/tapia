@@ -84,11 +84,12 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
         }
 
         //会話
-        //TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
-        //sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
-        //ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
+        TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
+        //TapiaApp.setCurrentLanguage(Language.LanguageID.ENGLISH_UK);
+        sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
+        ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
         //offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
-        final ArrayList actions=new ArrayList<>();
+        //final ArrayList actions=new ArrayList<>();
         //sttProvider.listen();   //録音の開始
 
         //内線番号表示用
@@ -97,17 +98,19 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
         final NumberSplit ns=new NumberSplit();
 
         //現在の日時を取得
+/*
         Calendar cal=Calendar.getInstance();
         final String month=String.valueOf(cal.get(Calendar.MONTH)+1);   //月
         final String day=String.valueOf(cal.get(Calendar.DAY_OF_MONTH));    //日
         final String hour=String.valueOf(cal.get(Calendar.HOUR_OF_DAY));    //時
         final String minute=String.valueOf(cal.get(Calendar.MINUTE));   //分
         final String week=String.valueOf(cal.get(Calendar.DAY_OF_WEEK));    //曜日
+*/
         //Log.v("テスト",);
         //Log.v("テスト",month+"月" +day+"日");
 
         //ブラウザ表示画面
-        final Intent browser=new Intent(activity,BrowserActivity.class);
+        //final Intent browser=new Intent(activity,BrowserActivity.class);
 
         /*画面遷移*********************************************************************************/
 
@@ -161,6 +164,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
 
         /*音声認識*********************************************************************************/
 
+/*
         //「天気」
         actions.add(new MySimpleAction.Weather(new SimpleAction.OnSimpleActionListener(){
             @Override
@@ -179,6 +183,15 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
             }
         }));
 
+        //「占い」
+        actions.add(new MySimpleAction.Fortune(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                browser.putExtra("flag","3");
+                startActivity(browser);
+            }
+        }));
+
         //「何日」
         actions.add(new MySimpleAction.Day(new SimpleAction.OnSimpleActionListener(){
             @Override
@@ -189,15 +202,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
                     e.printStackTrace();
                 }
                 ttsProvider.setOnSpeechCompleteListener(null);
-            }
-        }));
-
-        //「移動」
-        actions.add(new MySimpleAction.Move(new SimpleAction.OnSimpleActionListener(){
-            @Override
-            public void onSimpleAction(){
-                //移動
-                startActivity(new Intent(activity, IwataniMenuActivity.class));
             }
         }));
 
@@ -705,7 +709,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
                     public void OnAnalyseComplete(Action action) {
                         if(action==null){
                             try{
-                                ttsProvider.say("わかりません");
+                                ttsProvider.say("もう一度お願いします");
                             }catch(LanguageNotSupportedException e){
                                 e.printStackTrace();
                             }
@@ -898,6 +902,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
                             tapiaAnimation[i].stopAnimation();
                         }
                 }
+                int log=tapiaAnimation[n].getIndex();
+                Log.v("テスト",String.valueOf(log));
+
             }
         }, 0, time);
 

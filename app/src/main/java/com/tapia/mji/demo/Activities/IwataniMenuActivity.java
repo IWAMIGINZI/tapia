@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.tapia.mji.demo.Actions.MySimpleAction;
@@ -80,30 +81,42 @@ public class IwataniMenuActivity extends TapiaActivity implements View.OnClickLi
 
     //ボタン処理(「戻る」ボタン以外)
     public void onClick(View view){
-        //naisenに飛ばすためのflagを設定
+        //遷移先画面
         Intent intent = new Intent(this, NaisenActivity_2.class);
+        Intent intent2 = new Intent(this, NaisenKakudaiActivity.class);
+        //内線番号取得
+        ExtensionNumber en=new ExtensionNumber();
+
+        //flagを設定
         switch(view.getId()){
             case R.id.daiiti:
                 intent.putExtra("flag", "1");
+                startActivity(intent);
                 break;
             case R.id.daini:
                 intent.putExtra("flag", "2");
+                startActivity(intent);
                 break;
-            case R.id.daisan:
-                intent.putExtra("flag", "3");
+            case R.id.support:
+                intent2.putExtra("flag", "3");
+                intent2.putExtra("number", en.Supportdesk);
+                startActivity(intent2);
                 break;
             case R.id.gizyutu:
                 intent.putExtra("flag", "4");
+                startActivity(intent);
                 break;
             case R.id.kanri:
-                intent.putExtra("flag", "5");
+                intent2.putExtra("flag", "5");
+                intent2.putExtra("number", en.Kanri);
+                startActivity(intent2);
                 break;
-            case R.id.support:
+            case R.id.Projecttokatu:
                 intent.putExtra("flag", "6");
+                startActivity(intent);
                 break;
         }
-        //NaisenActivity_2にflagを持って飛ぶ
-        startActivity(intent);
+
     }
 
     //「戻る」ボタン処理

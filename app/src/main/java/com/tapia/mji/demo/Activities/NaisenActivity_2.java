@@ -38,20 +38,15 @@ public class NaisenActivity_2 extends TapiaActivity {
 
         //内線番号
         ExtensionNumber en=new ExtensionNumber();
-        final String eigyo1=en.eigyo1;
-        final String eigyo2=en.eigyo2;
-        final String eigyo3=en.eigyo3;
-        final String unyo1=en.unyo1;
-        final String unyo2=en.unyo2;
-        final String unyo3=en.unyo3;
-        final String kaihatu1=en.kaihatu1;
-        final String kaihatu2=en.kaihatu2;
-        final String kaihatu3=en.kaihatu3;
-        final String kiban=en.kiban;
-        final String tokatu=en.tokatu;
-        final String ict=en.ict;
-        final String kanri=en.kanri;
-        final String support=en.support;
+        final String Dep1_WINsupport=en.Dep1_WINsupport;     //第一事業部-WINサポート部
+        final String Dep1_WINEsupport=en.Dep1_WINEsupport;     //第一事業部-WIN-Eサポート部
+        final String Dep1_Kaihatu=en.Dep1_Kaihatu;   //第一事業部-開発部
+        final String Dep2_Syssupport=en.Dep2_Syssupport;     //第二事業部-システムサポート部
+        final String Dep2_Kaihatu=en.Dep2_Kaihatu;   //第二事業部-開発部
+        final String Hinsitukanri=en.Hinsitukanri;     //プロジェクト統括室-品質管理部
+        final String Projectkanri=en.Projectkanri;     //プロジェクト統括室-プロジェクト管理部
+        final String Kiban=en.Kiban;      //技術本部-基盤ソリューション部
+        final String Ict=en.Ict;        //技術本部-ICTソリューション推進部
 
         //テキストサイズ(Button用)
         float textsize_normal=40;
@@ -69,104 +64,81 @@ public class NaisenActivity_2 extends TapiaActivity {
         Button button2=(Button)findViewById(R.id.button2);
         Button button3=(Button)findViewById(R.id.button3);
 
+        //画面遷移先
         final Intent intentkakudai = new Intent(activity, NaisenKakudaiActivity.class);
 
         /*画面表示処理*****************************************************************************/
 
-        //IwataniMenuActivityTestからflagを受け取る
+        //IwataniMenuActivityからflagを受け取る
         Intent intent=getIntent();
         String data=intent.getStringExtra("flag");
         final int flag=Integer.parseInt(data);
 
-        //IwataniMenuActivityからのflagで分岐
-        if(flag>=1&&flag<=3) {
-            //第一事業部・第二事業部・第三事業部の設定
-            //Button設定
-            button1.setText(R.string.eigyo);
-            button2.setText(R.string.unyo);
-            button3.setText(R.string.kaihatu);
-            button1.setTextSize(textsize_normal);
-            button2.setTextSize(textsize_normal);
-            button3.setTextSize(textsize_normal);
-            switch (flag) {
-                case 1:
-                    /*第一事業部内線番号一覧表示*/
-                    //タイトル設定
-                    title.setText(R.string.daiiti);
-                    //1行目設定
-                    textView1.setText(eigyo1);
-                    //2行目設定
-                    textView2.setText(unyo1);
-                    //3行目設定
-                    textView3.setText(kaihatu1);
-                    break;
-                case 2:
-                    /*第二事業部内線番号一覧表示*/
-                    //タイトル設定
-                    title.setText(R.string.daini);
-                    //1行目設定
-                    textView1.setText(eigyo2);
-                    //2行目設定
-                    textView2.setText(unyo2);
-                    //3行目設定
-                    textView3.setText(kaihatu2);
-                    break;
-                case 3:
-                    /*第三事業部内線番号一覧表示*/
-                    //タイトル設定
-                    title.setText(R.string.daisan);
-                    //1行目設定
-                    textView1.setText(eigyo3);
-                    //2行目設定
-                    textView2.setText(unyo3);
-                    //3行目設定
-                    textView3.setText(kaihatu3);
-                    break;
-            }
-        }else{
-            switch (flag){
-                case 4:
-                    /*技術本部内線番号一覧表示*/
-                    //タイトル設定
-                    title.setText(R.string.gizyutu);
-                    //1行目設定
-                    button1.setText(R.string.kiban);
-                    button1.setTextSize(textsize_gizyutu);
-                    textView1.setText(kiban);
-                    //2行目設定
-                    button2.setText(R.string.tokatu);
-                    button2.setTextSize(textsize_gizyutu);
-                    textView2.setText(tokatu);
-                    //3行目設定
-                    button3.setText(R.string.ict);
-                    button3.setTextSize(textsize_ict);
-                    textView3.setText(ict);
-                    break;
-                case 5:
-                    /*管理部内線番号一覧表示*/
-                    //タイトル設定
-                    title.setText(R.string.kanri);
-                    //1行目設定
-                    button1.setText(R.string.kanri2);
-                    button1.setTextSize(textsize_normal);
-                    textView1.setText(kanri);
-                    //2行目設定
-                    button2.setVisibility(View.INVISIBLE);
-                    button3.setVisibility(View.INVISIBLE);
-                    break;
-                case 6:
-                    /*サポートデスク内線番号一覧表示*/
-                    //タイトル設定
-                    title.setText(R.string.support);
-                    //1行目設定
-                    button1.setText(R.string.support);
-                    button1.setTextSize(textsize_normal);
-                    textView1.setText(support);
-                    //2行目設定
-                    button2.setVisibility(View.INVISIBLE);
-                    button3.setVisibility(View.INVISIBLE);
-                    break;
-            }
+        //flagで分岐
+        switch (flag) {
+            case 1:
+                /*第一事業部内線番号一覧表示*/
+                //タイトル設定
+                title.setText(R.string.daiiti);
+                //1行目設定
+                button1.setText(R.string.WINsupport);
+                button1.setTextSize(textsize_normal);
+                textView1.setText(Dep1_WINsupport);
+                //2行目設定
+                button2.setText(R.string.WINEsupport);
+                button2.setTextSize(textsize_normal);
+                textView2.setText(Dep1_WINEsupport);
+                //3行目設定
+                button3.setText(R.string.kaihatu);
+                button3.setTextSize(textsize_normal);
+                textView3.setText(Dep1_Kaihatu);
+                break;
+            case 2:
+                /*第二事業部内線番号一覧表示*/
+                //タイトル設定
+                title.setText(R.string.daini);
+                //1行目設定
+                button1.setText(R.string.Syssupport);
+                button1.setTextSize(textsize_gizyutu);
+                textView1.setText(Dep2_Syssupport);
+                //2行目設定
+                button2.setText(R.string.kaihatu);
+                button2.setTextSize(textsize_normal);
+                textView2.setText(Dep2_Kaihatu);
+                //3行目設定
+                button3.setVisibility(View.INVISIBLE);
+                break;
+            case 4:
+                /*技術本部内線番号一覧表示*/
+                //タイトル設定
+                title.setText(R.string.gizyutu);
+                //1行目設定
+                button1.setText(R.string.kiban);
+                button1.setTextSize(textsize_gizyutu);
+                textView1.setText(Kiban);
+                //2行目設定
+                button2.setText(R.string.ict);
+                button2.setTextSize(textsize_normal);
+                button2.setTextSize(textsize_ict);
+                textView2.setText(Ict);
+                //3行目設定
+                button3.setVisibility(View.INVISIBLE);
+                break;
+            case 6:
+                /*プロジェクト統括室内線番号一覧表示*/
+                //タイトル設定
+                title.setText(R.string.Projecttokatu);
+                //1行目設定
+                button1.setText(R.string.Projectkanri);
+                button1.setTextSize(textsize_gizyutu);
+                textView1.setText(Projectkanri);
+                //2行目設定
+                button2.setText(R.string.Hinsitukanri);
+                button2.setTextSize(textsize_normal);
+                textView2.setText(Hinsitukanri);
+                //3行目設定
+                button3.setVisibility(View.INVISIBLE);
+                break;
         }
 
         /*ボタン押下時の処理***********************************************************************/
@@ -178,27 +150,19 @@ public class NaisenActivity_2 extends TapiaActivity {
                 switch (flag){
                     case 1:
                         intentkakudai.putExtra("flag", "11");
-                        intentkakudai.putExtra("number",eigyo1);
+                        intentkakudai.putExtra("number",Dep1_WINsupport);
                         break;
                     case 2:
                         intentkakudai.putExtra("flag", "21");
-                        intentkakudai.putExtra("number",eigyo2);
-                        break;
-                    case 3:
-                        intentkakudai.putExtra("flag", "31");
-                        intentkakudai.putExtra("number",eigyo3);
+                        intentkakudai.putExtra("number",Dep2_Syssupport);
                         break;
                     case 4:
-                        intentkakudai.putExtra("flag", "44");
-                        intentkakudai.putExtra("number",kiban);
-                        break;
-                    case 5:
-                        intentkakudai.putExtra("flag", "54");
-                        intentkakudai.putExtra("number",kanri);
+                        intentkakudai.putExtra("flag", "41");
+                        intentkakudai.putExtra("number",Kiban);
                         break;
                     case 6:
-                        intentkakudai.putExtra("flag", "64");
-                        intentkakudai.putExtra("number",support);
+                        intentkakudai.putExtra("flag", "61");
+                        intentkakudai.putExtra("number",Projectkanri);
                         break;
                 }
                 //NaisenKakudaiにflagを持って飛ぶ
@@ -213,19 +177,19 @@ public class NaisenActivity_2 extends TapiaActivity {
                 switch (flag){
                     case 1:
                         intentkakudai.putExtra("flag", "12");
-                        intentkakudai.putExtra("number",unyo1);
+                        intentkakudai.putExtra("number",Dep1_WINEsupport);
                         break;
                     case 2:
                         intentkakudai.putExtra("flag", "22");
-                        intentkakudai.putExtra("number",unyo2);
-                        break;
-                    case 3:
-                        intentkakudai.putExtra("flag", "32");
-                        intentkakudai.putExtra("number",unyo3);
+                        intentkakudai.putExtra("number",Dep2_Kaihatu);
                         break;
                     case 4:
-                        intentkakudai.putExtra("flag", "45");
-                        intentkakudai.putExtra("number",tokatu);
+                        intentkakudai.putExtra("flag", "42");
+                        intentkakudai.putExtra("number",Ict);
+                        break;
+                    case 6:
+                        intentkakudai.putExtra("flag", "62");
+                        intentkakudai.putExtra("number",Hinsitukanri);
                         break;
                 }
                 //NaisenKakudaiにflagを持って飛ぶ
@@ -240,19 +204,7 @@ public class NaisenActivity_2 extends TapiaActivity {
                 switch (flag){
                     case 1:
                         intentkakudai.putExtra("flag", "13");
-                        intentkakudai.putExtra("number",kaihatu1);
-                        break;
-                    case 2:
-                        intentkakudai.putExtra("flag", "23");
-                        intentkakudai.putExtra("number",kaihatu2);
-                        break;
-                    case 3:
-                        intentkakudai.putExtra("flag", "33");
-                        intentkakudai.putExtra("number",kaihatu3);
-                        break;
-                    case 4:
-                        intentkakudai.putExtra("flag", "46");
-                        intentkakudai.putExtra("number",ict);
+                        intentkakudai.putExtra("number",Dep1_Kaihatu);
                         break;
                 }
                 //NaisenKakudaiにflagを持って飛ぶ
