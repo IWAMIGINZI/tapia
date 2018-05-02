@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import com.tapia.mji.demo.Labellio.AnalyzerRecognitionSync;
 import com.tapia.mji.demo.R;
+import com.tapia.mji.demo.Tools.AsyncCaller;
 import com.tapia.mji.demo.Tools.Locker;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
 
@@ -151,7 +152,7 @@ public class EnterRoomActivity extends TapiaActivity {
                 ars = new AnalyzerRecognitionSync(getApplicationContext());
                 ars.setImageParameter("MSG/FRAME_JPG_B64", imgPath);
                 ars.setParameter("MSG/FRAME_KEY", timeString);
-                new AsyncCaller().execute();
+                new AsyncCaller(ars, json).execute();
                 handler.post(new Runnable() {
                     public void run() {
                         onCompleteRecognition();
@@ -183,70 +184,6 @@ public class EnterRoomActivity extends TapiaActivity {
         case R.id.back:
             startActivity(new Intent(this, SleepActivity.class));
             break;
-        }
-    }
-
-    private class AsyncCaller extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                json = ars.post();
-                String jsons = json.toString();
-                Log.d("tapia", jsons);
-                actionRecognition(json);
-            } catch (JSONException e) {
-                Log.e("JSONException", e.getMessage());
-            }
-            return null;
-        }
-
-        private void actionRecognition(JSONObject json) {
-            try {
-                if (json.getInt("STATUS") == 0) {
-                    JSONObject result = json.getJSONObject("RESULT");
-                    actionRecognitionResult(result);
-                } else {
-                    Log.d("tapia", "検出失敗");
-                }
-            } catch (JSONException e) {
-                Log.d("tapia", "JSONException in actionRecognition");
-            }
-        }
-
-        private void actionRecognitionResult(JSONObject result) {
-            try {
-                if (result.has("FACE")) {
-                    actionRecognitionFace(result.getJSONArray("FACE"));
-                }
-            } catch (JSONException e) {
-                Log.d("tapia", "JSONException in actionRecognitionResult");
-            }
-        }
-
-        private void actionRecognitionFace(JSONArray faces) {
-            try {
-                for (int i = 0; i < faces.length(); i++) {
-                    JSONObject face = faces.getJSONObject(i);
-                    if (face.has("PERSON_CODE")) {
-                        actionOpenSesami(face);
-                    }
-                }
-            } catch (JSONException e) {
-                Log.d("tapia", "JSONException in actionRecognitionFace");
-            }
-        }
-
-        private void actionOpenSesami(JSONObject face) {
-            try {
-                String code = face.getString("PERSON_CODE");
-                String name = "";
-                if (face.has("PERSON_NAME")) {
-                    name = face.getString("PERSON_NAME");
-                }
-                // do open sesami!!
-            } catch (JSONException e) {
-                Log.d("tapia", "JSONException in actionOpenSesami");
-            }
         }
     }
 }
