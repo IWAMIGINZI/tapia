@@ -1,1 +1,1 @@
-include ':app', ':tapialib_1.0.3'
+include ':app'
