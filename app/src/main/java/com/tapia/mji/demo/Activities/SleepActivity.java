@@ -82,10 +82,10 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
         }
 
         //会話
-        TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
+        //++ TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
         //TapiaApp.setCurrentLanguage(Language.LanguageID.ENGLISH_UK);
-        sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
-        ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
+        //++ sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
+        //++ ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
         //offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
         //final ArrayList actions=new ArrayList<>();
         //sttProvider.listen();   //録音の開始
