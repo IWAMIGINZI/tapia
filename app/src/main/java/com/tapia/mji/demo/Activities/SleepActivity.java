@@ -1,40 +1,24 @@
 package com.tapia.mji.demo.Activities;
 
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.tapia.mji.demo.Actions.MySimpleAction;
-import com.tapia.mji.demo.Actions.SoundDetect;
 import com.tapia.mji.demo.R;
-import com.tapia.mji.demo.Tools.LockedWork;
-import com.tapia.mji.demo.Tools.Locker;
-import com.tapia.mji.tapialib.Actions.Action;
-import com.tapia.mji.tapialib.Actions.SimpleAction;
+import com.tapia.mji.demo.Tools.WatcherController;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
-import com.tapia.mji.tapialib.Exceptions.LanguageNotSupportedException;
 import com.tapia.mji.tapialib.Languages.Language;
-import com.tapia.mji.tapialib.Providers.Interfaces.NLUProvider;
-import com.tapia.mji.tapialib.Providers.Interfaces.STTProvider;
-import com.tapia.mji.tapialib.Providers.Interfaces.TTSProvider;
 import com.tapia.mji.tapialib.TapiaApp;
 import com.tapia.mji.tapialib.Utils.TapiaAnimation;
 
 
-
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,8 +28,9 @@ import java.util.TimerTask;
 /**
  * Created by Sami on 12-Jul-16.
  */
-public class SleepActivity extends TapiaActivity implements SensorEventListener, LockedWork {
+public class SleepActivity extends TapiaActivity implements SensorEventListener {
     TapiaAnimation[] tapiaAnimation = new TapiaAnimation[14];
+    WatcherController wc;
 
     //センサマネージャの取得
     private SensorManager sensorManager;
@@ -55,7 +40,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
     int time = 60000;
 
     // TTSProvider.OnStateChangeListener onTTSstateListener;
-    SoundDetect mSoundDetect;
     Handler mHandler = new Handler();
 
     @Override
@@ -82,10 +66,10 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
         }
 
         //会話
-        //++ TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
+        TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
         //TapiaApp.setCurrentLanguage(Language.LanguageID.ENGLISH_UK);
-        //++ sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
-        //++ ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
+        sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
+        ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
         //offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
         //final ArrayList actions=new ArrayList<>();
         //sttProvider.listen();   //録音の開始
@@ -718,15 +702,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
                 });
             }
         });*/
-
-        ApplicationInfo appliInfo = null;
-        int wait_msec = 1000;
-        try {
-            appliInfo = getApplicationContext().getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
-            wait_msec = appliInfo.metaData.getInt("camera_scan_interval");
-        } catch (PackageManager.NameNotFoundException e) {
-        } catch (NumberFormatException e) {
-        }
     }
 
     //Activity終了の際呼ばれる
@@ -744,9 +719,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
         //音のする方向へ動く処理のキャンセル
         //stopSoundLocation(this);
 
-        // 音声検出スレッド停止
-        mSoundDetect.stop();
-        Locker.whenMedamaWorking(this);
+        // バックグランドカメラ監視停止
+        wc.stop();
+        wc = null;
     }
 
 
@@ -762,8 +737,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
     @Override
     protected void onResume() {
         super.onResume();
-
-        Locker.whenMedamaWorking(this);
 
         //音のする方向へ回転
         //startSoundLocation(this);
@@ -900,33 +873,16 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
             }
         }, 0, time);
 
-        mSoundDetect = new SoundDetect();
-// リスナーを登録して音を感知できるように
-        mSoundDetect.setOnVolumeReachedListener(
-                new SoundDetect.OnReachedVolumeListener() {
-                    // 音を感知したら呼び出される
-                    public void onReachedVolume(short volume) {
-// 別スレッドからUIスレッドに要求するのでHandler.postでエラー回避
-                        mHandler.post(new Runnable() {//Runnableに入った要求を順番にLoopでrunを呼び出し処理
-                            public void run() {
-                                onVolumeReached();
-                            }
-                        });
-                    }
-                });
-// 別スレッドとしてSoundSwitchを開始（録音を開始）
-        new Thread(mSoundDetect).start();
-
         //近接センサ登録
         List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_PROXIMITY);
         if (sensors.size() > 0) {
             Sensor s = sensors.get(0);
             sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
         }
-    }
 
-    public void onVolumeReached() {
-        startActivity(new Intent(activity, EnterRoomActivity.class));
+        // バックグラウンドカメラ監視
+        wc = new WatcherController();
+        wc.start();
     }
 
     @Override
@@ -944,13 +900,5 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener,
                 startActivity(new Intent(activity, IwataniMenuActivity.class));
             }
         }
-    }
-
-    public void work() {
-        Locker.setWorker(Locker.WORKER_DEFAULT);
-    }
-
-    public void workElse() {
-        Locker.setWorker(Locker.WORKER_MEDAMA);
     }
 }

@@ -2,35 +2,21 @@ package com.tapia.mji.demo.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 
-import com.tapia.mji.demo.Actions.MySimpleAction;
 import com.tapia.mji.demo.R;
-import com.tapia.mji.demo.Tools.LockedWork;
-import com.tapia.mji.demo.Tools.Locker;
-import com.tapia.mji.tapialib.Actions.SimpleAction;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
 import com.tapia.mji.tapialib.Exceptions.LanguageNotSupportedException;
 import com.tapia.mji.tapialib.Languages.Language;
-import com.tapia.mji.tapialib.Providers.Interfaces.STTProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.TTSProvider;
 import com.tapia.mji.tapialib.TapiaApp;
-import com.tapia.mji.tapialib.Utils.TapiaAnimation;
-import com.tapia.mji.tapialib.Utils.TapiaRobot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
  * Created by ais75114 on 2017/09/19.
  */
 
-public class IwataniMenuActivity extends TapiaActivity implements View.OnClickListener, LockedWork {
+public class IwataniMenuActivity extends TapiaActivity implements View.OnClickListener {
 
     /*一定時間経つと待機画面へ戻る処理*/
     Timelag timelag=new Timelag();
@@ -66,7 +52,6 @@ public class IwataniMenuActivity extends TapiaActivity implements View.OnClickLi
     @Override
     protected void onResume(){
         super.onResume();
-        Locker.whenNaisenWorking(this);
         //「1分後」セット
         timelag.setting(timelag.move(activity));
     }
@@ -76,7 +61,6 @@ public class IwataniMenuActivity extends TapiaActivity implements View.OnClickLi
         super.onPause();
         //ハンドラのキャンセル
         timelag.cancel();
-        Locker.whenNaisenWorking(this);
     }
 
     //ボタン処理(「戻る」ボタン以外)
@@ -127,13 +111,5 @@ public class IwataniMenuActivity extends TapiaActivity implements View.OnClickLi
                 startActivity(new Intent(activity, SleepActivity.class));
                 break;
         }
-    }
-
-    public void work() {
-        Locker.setWorker(Locker.WORKER_DEFAULT);
-    }
-
-    public void workElse() {
-        Locker.setWorker(Locker.WORKER_NAISEN);
     }
 }

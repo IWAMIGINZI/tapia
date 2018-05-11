@@ -12,10 +12,12 @@ import org.json.JSONObject;
 public class AsyncCaller extends AsyncTask<Void, Void, Void> {
     AnalyzerRecognitionSync ars;
     JSONObject json;
+    Watcher watcher;
 
-    public AsyncCaller(AnalyzerRecognitionSync ars, JSONObject json) {
+    public AsyncCaller(AnalyzerRecognitionSync ars, JSONObject json, Watcher watcher) {
         this.ars = ars;
         this.json = json;
+        this.watcher = watcher;
     }
 
     @Override
@@ -23,7 +25,7 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
         try {
             json = ars.post();
             String jsons = json.toString();
-            Log.d("tapia", jsons);
+            //++ Log.d("tapia", jsons);
             actionRecognition(json);
         } catch (JSONException e) {
             Log.e("JSONException", e.getMessage());
@@ -73,16 +75,21 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
             String name = "";
             if (face.has("PERSON_NAME")) {
                 name = face.getString("PERSON_NAME");
+                doOpenSesami(code, name, face);
             }
-            // do open sesami!!
         } catch (JSONException e) {
             Log.d("tapia", "JSONException in actionOpenSesami");
         }
     }
 
+    private void doOpenSesami(String code, String name, JSONObject face) {
+        Log.d("tapia", "Found: code=" + code + ", name=" + name);
+    }
+
     @Override
     protected void onPostExecute(Void params) {
         super.onPostExecute(params);
-        Log.d("tapia", "async task onPostExecute");
+        //++ Log.d("tapia", "async task onPostExecute");
+        watcher.onCompleteRecognition();
     }
 }

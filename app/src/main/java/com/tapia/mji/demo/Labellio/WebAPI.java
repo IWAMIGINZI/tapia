@@ -3,8 +3,9 @@ package com.tapia.mji.demo.Labellio;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.tapia.mji.tapialib.TapiaApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,8 +24,9 @@ public class WebAPI {
     private String labellioAccessKey;
     private HashMap<String, String> params;
 
-    WebAPI(@NonNull Context context) {
+    WebAPI() {
         ApplicationInfo appliInfo = null;
+        Context context = TapiaApp.getAppContext();
         try {
             appliInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             labellioApiUrl = appliInfo.metaData.getString("labellio_api_url");
