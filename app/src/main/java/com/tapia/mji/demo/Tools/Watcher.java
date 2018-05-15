@@ -105,7 +105,7 @@ public class Watcher implements Runnable {
             pictureTaking = true;
             cameraInit(camera);
             camera.autoFocus(autoFocusCallback);
-            //++ Log.d("tapia", "autoFocus called.");
+            Log.d("tapia", "autoFocus called.");
         }
         return DetectResult.NOT_FOUND;
     }
@@ -118,13 +118,13 @@ public class Watcher implements Runnable {
                 e.printStackTrace();
                 Log.d("tapia", "Exception onAutoFocus");
             }
-            //++ Log.d("tapia", "onAutoFocus");
+            Log.d("tapia", "onAutoFocus");
         }
     };
 
     private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-            //++ Log.d("tapia", "onPictureTaken");
+            Log.d("tapia", "onPictureTaken");
             String saveDir = Environment.getExternalStorageDirectory().getPath() + "/tapia";
 
             File file = new File(saveDir);

@@ -1,13 +1,23 @@
 package com.tapia.mji.demo.Tools;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.tapia.mji.demo.Labellio.AnalyzerRecognitionSync;
+import com.tapia.mji.tapialib.TapiaApp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class AsyncCaller extends AsyncTask<Void, Void, Void> {
     AnalyzerRecognitionSync ars;
@@ -84,6 +94,32 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
 
     private void doOpenSesami(String code, String name, JSONObject face) {
         Log.d("tapia", "Found: code=" + code + ", name=" + name);
+        ApplicationInfo appliInfo = null;
+        Context context = TapiaApp.getAppContext();
+        try {
+            appliInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            String server = appliInfo.metaData.getString("opensesami_server");
+            int port = appliInfo.metaData.getInt("opensesami_port");
+            Socket sock = new Socket(server, port);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            PrintWriter writer = new PrintWriter(sock.getOutputStream(), true);
+            int c;
+            while ((c = reader.read()) != -1) {
+                if (c == '>') { // RJE> の > のみを判断に使用する。
+                    break;
+                }
+            }
+            writer.println("OPENDOOR " + code);
+            String rc = reader.readLine();
+            Log.d("tapia", code + ": Open Door: " + rc);
+            reader.close();
+            writer.close();
+            sock.close();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
