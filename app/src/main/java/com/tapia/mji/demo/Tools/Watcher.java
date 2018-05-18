@@ -33,6 +33,7 @@ public class Watcher implements Runnable {
     AnalyzerRecognitionSync ars;
     JSONObject json;
     Watcher watcher;
+    String imgPath;
 
     protected void setCameraIndex() {
         int numberOfCameras = Camera.getNumberOfCameras();
@@ -138,7 +139,7 @@ public class Watcher implements Runnable {
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd_HHmmss");
             String timeString = sf.format(cal.getTime());
-            String imgPath = saveDir + "/" + timeString + ".jpg";
+            imgPath = saveDir + "/" + timeString + ".jpg";
 
             FileOutputStream fos;
             try {
@@ -169,8 +170,19 @@ public class Watcher implements Runnable {
         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
+    private void unregistAndroidDB(String path) {
+        File file = new File(path);
+        file.delete();
+        ContentValues values = new ContentValues();
+        ContentResolver contentResolver = TapiaApp.getAppContext().getContentResolver();
+        contentResolver.delete(MediaStore.Files.getContentUri("external"),
+                MediaStore.Files.FileColumns.DATA + "=?",
+                new String[]{ path });
+    }
+
     public void onCompleteRecognition() {
         Log.d("tapia", "I'm working.");
+        unregistAndroidDB(imgPath);
         pictureTaking = false;
     }
 }
