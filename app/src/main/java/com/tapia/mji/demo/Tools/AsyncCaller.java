@@ -82,10 +82,15 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
     private void actionOpenSesami(JSONObject face) {
         try {
             String code = face.getString("PERSON_CODE");
-            String name = "";
-            if (face.has("PERSON_NAME")) {
-                name = face.getString("PERSON_NAME");
-                doOpenSesami(code, name, face);
+            if (!code.equals("00000000")) {
+                String name = "";
+                if (face.has("PERSON_NAME")) {
+                    name = face.getString("PERSON_NAME");
+                    doOpenSesami(code, name, face);
+                }
+            } else {
+                Log.d("tapia","face recognition code Unknown.");
+
             }
         } catch (JSONException e) {
             Log.d("tapia", "JSONException in actionOpenSesami");
@@ -109,7 +114,7 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
                     break;
                 }
             }
-            writer.println("OPENDOOR " + code);
+            writer.println("OPEN DOOR " + code);
             String rc = reader.readLine();
             Log.d("tapia", code + ": Open Door: " + rc);
             reader.close();

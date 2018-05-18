@@ -68,10 +68,13 @@
             android:value="a9*SROZV0F7CGYSSFH01cc/?PAPa(HSE" />
         <meta-data
             android:name="labellio_api_url"
-            android:value="http://ec2-34-198-238-4.compute-1.amazonaws.com/l4f/api" />
+            android:value="http://172.31.22.218/l4f/api.php" />
+<!--        <meta-data
+            android:name="labellio_access_key"
+            android:value="25e06caa-db06-4029-8346-e983d8ff57f5" /> -->
         <meta-data
             android:name="labellio_access_key"
-            android:value="25e06caa-db06-4029-8346-e983d8ff57f5" />
+            android:value="925d731d-bf63-4838-92cf-e6bb631fdc87" />
         <meta-data
             android:name="camera_scan_interval"
             android:value="2000" />
@@ -80,7 +83,7 @@
             android:value="2000" />
         <meta-data
             android:name="opensesami_server"
-            android:value="192.168.1.3" />
+            android:value="172.31.92.121" />
         <meta-data
             android:name="opensesami_port"
             android:value="9998" />
