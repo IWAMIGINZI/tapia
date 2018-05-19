@@ -10,8 +10,10 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.tapia.mji.demo.R;
+import com.tapia.mji.demo.Tools.RecognitionTimer;
 import com.tapia.mji.demo.Tools.WatcherController;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
 import com.tapia.mji.tapialib.Languages.Language;
@@ -19,6 +21,7 @@ import com.tapia.mji.tapialib.TapiaApp;
 import com.tapia.mji.tapialib.Utils.TapiaAnimation;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,6 +41,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     //アニメーション切り替え用
     Timer timer = new Timer();
     int time = 60000;
+    Timer recognitionTimer = null;
 
     // TTSProvider.OnStateChangeListener onTTSstateListener;
     Handler mHandler = new Handler();
@@ -716,6 +720,12 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         //タイマキャンセル
         timer.cancel();
+        timer = null;
+        if (recognitionTimer != null) {
+            recognitionTimer.cancel();
+            recognitionTimer = null;
+        }
+
         //音のする方向へ動く処理のキャンセル
         //stopSoundLocation(this);
 
@@ -869,7 +879,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 }
                 int log=tapiaAnimation[n].getIndex();
                 Log.v("テスト",String.valueOf(log));
-
             }
         }, 0, time);
 
@@ -881,7 +890,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         }
 
         // バックグラウンドカメラ監視
-        wc = new WatcherController();
+        wc = new WatcherController(this);
         wc.start();
     }
 
@@ -900,5 +909,32 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 startActivity(new Intent(activity, IwataniMenuActivity.class));
             }
         }
+    }
+
+    public void onRecognitionCompleted(ArrayList<String> names) {
+        if (names.size() > 0) {
+            String name = "";
+            for (int i = 0; i < names.size(); i++) {
+                if (i != 0) {
+                    name += "\n";
+                }
+                name += names.get(i);
+            }
+            TextView tvPersonName = (TextView) findViewById(R.id.textPersonName);
+            tvPersonName.setText(name);
+            if (recognitionTimer != null) {
+                recognitionTimer.cancel();
+                recognitionTimer = null;
+            }
+            recognitionTimer = new Timer();
+            recognitionTimer.schedule(new RecognitionTimer(this), 3 * 1000);
+        }
+    }
+
+    public void onRecognitionCompleteTimer() {
+        TextView tvPersonName = (TextView)findViewById(R.id.textPersonName);
+        tvPersonName.setText("");
+        recognitionTimer.cancel();
+        recognitionTimer = null;
     }
 }

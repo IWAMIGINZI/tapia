@@ -18,11 +18,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class AsyncCaller extends AsyncTask<Void, Void, Void> {
     AnalyzerRecognitionSync ars;
     JSONObject json;
     Watcher watcher;
+    ArrayList<String> names = new ArrayList<String>();
 
     public AsyncCaller(AnalyzerRecognitionSync ars, JSONObject json, Watcher watcher) {
         this.ars = ars;
@@ -68,10 +70,14 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
 
     private void actionRecognitionFace(JSONArray faces) {
         try {
+            names.clear();
             for (int i = 0; i < faces.length(); i++) {
                 JSONObject face = faces.getJSONObject(i);
                 if (face.has("PERSON_CODE")) {
                     actionOpenSesami(face);
+                    if (face.has("PERSON_NAME")) {
+                        names.add(face.getString("PERSON_NAME"));
+                    }
                 }
             }
         } catch (JSONException e) {
@@ -131,6 +137,6 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void params) {
         super.onPostExecute(params);
         //++ Log.d("tapia", "async task onPostExecute");
-        watcher.onCompleteRecognition();
+        watcher.onCompleteRecognition(names);
     }
 }

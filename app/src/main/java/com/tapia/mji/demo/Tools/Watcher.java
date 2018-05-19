@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.tapia.mji.demo.Activities.SleepActivity;
 import com.tapia.mji.demo.Labellio.AnalyzerRecognitionSync;
 import com.tapia.mji.tapialib.TapiaApp;
 
@@ -20,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Watcher implements Runnable {
@@ -34,6 +36,11 @@ public class Watcher implements Runnable {
     JSONObject json;
     Watcher watcher;
     String imgPath;
+    SleepActivity activity;
+
+    public Watcher(SleepActivity activity) {
+        this.activity = activity;
+    }
 
     protected void setCameraIndex() {
         int numberOfCameras = Camera.getNumberOfCameras();
@@ -100,7 +107,12 @@ public class Watcher implements Runnable {
     public void stop() {
         running = false;
     }
-
+    public boolean isStopped() {
+        if (running) {
+            return false;
+        }
+        return true;
+    }
     public DetectResult capture(Camera camera) {
         if (!pictureTaking) {
             pictureTaking = true;
@@ -113,52 +125,60 @@ public class Watcher implements Runnable {
 
     private Camera.AutoFocusCallback autoFocusCallback = new Camera.AutoFocusCallback() {
         public void onAutoFocus(boolean success, Camera camera) {
-            try {
-                camera.takePicture(null, null, pictureCallback);
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                Log.d("tapia", "Exception onAutoFocus");
+            if (!isStopped()) {
+                try {
+                    camera.takePicture(null, null, pictureCallback);
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    Log.d("tapia", "Exception onAutoFocus");
+                }
+                Log.d("tapia", "onAutoFocus");
+            } else {
+                Log.d("tapia", "watcher stopped, so do nothing.(onAutoFocus)");
             }
-            Log.d("tapia", "onAutoFocus");
         }
     };
 
     private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-            Log.d("tapia", "onPictureTaken");
-            String saveDir = Environment.getExternalStorageDirectory().getPath() + "/tapia";
+            if (!isStopped()) {
+                Log.d("tapia", "onPictureTaken");
+                String saveDir = Environment.getExternalStorageDirectory().getPath() + "/tapia";
 
-            File file = new File(saveDir);
+                File file = new File(saveDir);
 
-            if (!file.exists()) {
-                if (!file.mkdir()) {
-                    Log.e("tapia", "Make Dir Error");
+                if (!file.exists()) {
+                    if (!file.mkdir()) {
+                        Log.e("tapia", "Make Dir Error");
+                    }
                 }
+
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                String timeString = sf.format(cal.getTime());
+                imgPath = saveDir + "/" + timeString + ".jpg";
+
+                FileOutputStream fos;
+                try {
+                    fos = new FileOutputStream(imgPath, true);
+                    fos.write(data);
+                    fos.close();
+                    registAndroidDB(imgPath);
+                    ars = new AnalyzerRecognitionSync();
+                    ars.setImageParameter("MSG/FRAME_JPG_B64", imgPath);
+                    ars.setParameter("MSG/FRAME_KEY", timeString);
+                    new AsyncCaller(ars, json, watcher).execute();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("EnterRoom::picture", e.getMessage());
+                }
+
+                fos = null;
+
+                cameraUninit(camera);
+            } else {
+                Log.d("tapia", "watcher stopped, so do nothing.(onPictureTaken)");
             }
-
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-            String timeString = sf.format(cal.getTime());
-            imgPath = saveDir + "/" + timeString + ".jpg";
-
-            FileOutputStream fos;
-            try {
-                fos = new FileOutputStream(imgPath,true);
-                fos.write(data);
-                fos.close();
-                registAndroidDB(imgPath);
-                ars = new AnalyzerRecognitionSync();
-                ars.setImageParameter("MSG/FRAME_JPG_B64", imgPath);
-                ars.setParameter("MSG/FRAME_KEY", timeString);
-                new AsyncCaller(ars, json, watcher).execute();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e("EnterRoom::picture", e.getMessage());
-            }
-
-            fos = null;
-
-            cameraUninit(camera);
         }
     };
 
@@ -180,9 +200,10 @@ public class Watcher implements Runnable {
                 new String[]{ path });
     }
 
-    public void onCompleteRecognition() {
+    public void onCompleteRecognition(ArrayList<String> names) {
         Log.d("tapia", "I'm working.");
         unregistAndroidDB(imgPath);
+        activity.onRecognitionCompleted(names);
         pictureTaking = false;
     }
 }
