@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tapia.mji.demo.R;
+import com.tapia.mji.demo.Tools.DeviceLog;
 import com.tapia.mji.demo.Tools.RecognitionTimer;
 import com.tapia.mji.demo.Tools.WatcherController;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
@@ -39,7 +41,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     private SensorManager sensorManager;
 
     //アニメーション切り替え用
-    Timer timer = new Timer();
+    Timer timer = null;
     int time = 60000;
     Timer recognitionTimer = null;
 
@@ -52,6 +54,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         /*宣言部***********************************************************************************/
 
+        // 画面をスリープさせない
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //待機画面表示
         setContentView(R.layout.eyes_layout);
 
@@ -752,6 +756,10 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         //startSoundLocation(this);
 
         //一定時間(1分)毎に処理を行う
+        if (timer != null) {
+            timer.cancel();
+        }
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -912,29 +920,37 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     }
 
     public void onRecognitionCompleted(ArrayList<String> names) {
-        if (names.size() > 0) {
-            String name = "";
-            for (int i = 0; i < names.size(); i++) {
-                if (i != 0) {
-                    name += "\n";
+        try {
+            if (names.size() > 0) {
+                String name = "";
+                for (int i = 0; i < names.size(); i++) {
+                    if (i != 0) {
+                        name += "\n";
+                    }
+                    name += names.get(i);
                 }
-                name += names.get(i);
+                TextView tvPersonName = (TextView) findViewById(R.id.textPersonName);
+                tvPersonName.setText(name);
+                if (recognitionTimer != null) {
+                    recognitionTimer.cancel();
+                    recognitionTimer = null;
+                }
+                recognitionTimer = new Timer();
+                recognitionTimer.schedule(new RecognitionTimer(this), 3 * 1000);
             }
-            TextView tvPersonName = (TextView) findViewById(R.id.textPersonName);
-            tvPersonName.setText(name);
-            if (recognitionTimer != null) {
-                recognitionTimer.cancel();
-                recognitionTimer = null;
-            }
-            recognitionTimer = new Timer();
-            recognitionTimer.schedule(new RecognitionTimer(this), 3 * 1000);
+        } catch (RuntimeException e) {
+            DeviceLog.d("tapia", "onRecognitionCompleted", e);
         }
     }
 
     public void onRecognitionCompleteTimer() {
-        TextView tvPersonName = (TextView)findViewById(R.id.textPersonName);
-        tvPersonName.setText("");
-        recognitionTimer.cancel();
-        recognitionTimer = null;
+        try {
+            TextView tvPersonName = (TextView) findViewById(R.id.textPersonName);
+            tvPersonName.setText("");
+            recognitionTimer.cancel();
+            recognitionTimer = null;
+        } catch (RuntimeException e) {
+            DeviceLog.d("tapia", "onRecognitionCompleteTimer", e);
+        }
     }
 }

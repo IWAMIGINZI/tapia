@@ -18,7 +18,7 @@ public class WatcherController {
         watcher = new Watcher(activity);
         thread = new Thread(watcher);
         thread.start();
-        Log.d("tapia", "WatcherController started.");
+        DeviceLog.d("tapia", "WatcherController started.");
         return true;
     }
 
@@ -27,10 +27,10 @@ public class WatcherController {
         try {
             thread.join();
         } catch (InterruptedException e) {
-            Log.d("tapia", "Watcher Thread join failed.");
+            DeviceLog.d("tapia", "Watcher Thread join failed.", e);
             return false;
         }
-        Log.d("tapia", "WatcherController stopped.");
+        DeviceLog.d("tapia", "WatcherController stopped.");
         return true;
     }
 }

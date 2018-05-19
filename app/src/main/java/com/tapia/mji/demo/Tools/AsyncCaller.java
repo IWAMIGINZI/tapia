@@ -37,7 +37,7 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
         try {
             json = ars.post();
             String jsons = json.toString();
-            //++ Log.d("tapia", jsons);
+            //++ DeviceLog.d("tapia", jsons);
             actionRecognition(json);
         } catch (JSONException e) {
             Log.e("JSONException", e.getMessage());
@@ -51,10 +51,10 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
                 JSONObject result = json.getJSONObject("RESULT");
                 actionRecognitionResult(result);
             } else {
-                Log.d("tapia", "検出失敗");
+                DeviceLog.d("tapia", "検出失敗");
             }
         } catch (JSONException e) {
-            Log.d("tapia", "JSONException in actionRecognition");
+            DeviceLog.d("tapia", "JSONException in actionRecognition", e);
         }
     }
 
@@ -64,7 +64,7 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
                 actionRecognitionFace(result.getJSONArray("FACE"));
             }
         } catch (JSONException e) {
-            Log.d("tapia", "JSONException in actionRecognitionResult");
+            DeviceLog.d("tapia", "JSONException in actionRecognitionResult", e);
         }
     }
 
@@ -81,7 +81,7 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
                 }
             }
         } catch (JSONException e) {
-            Log.d("tapia", "JSONException in actionRecognitionFace");
+            DeviceLog.d("tapia", "JSONException in actionRecognitionFace", e);
         }
     }
 
@@ -95,16 +95,16 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
                     doOpenSesami(code, name, face);
                 }
             } else {
-                Log.d("tapia","face recognition code Unknown.");
+                DeviceLog.d("tapia","face recognition code Unknown.");
 
             }
         } catch (JSONException e) {
-            Log.d("tapia", "JSONException in actionOpenSesami");
+            DeviceLog.d("tapia", "JSONException in actionOpenSesami", e);
         }
     }
 
     private void doOpenSesami(String code, String name, JSONObject face) {
-        Log.d("tapia", "Found: code=" + code + ", name=" + name);
+        DeviceLog.d("tapia", "Found: code=" + code + ", name=" + name);
         ApplicationInfo appliInfo = null;
         Context context = TapiaApp.getAppContext();
         try {
@@ -122,21 +122,21 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
             }
             writer.println("OPEN DOOR " + code);
             String rc = reader.readLine();
-            Log.d("tapia", code + ": Open Door: " + rc);
+            DeviceLog.d("tapia", code + ": Open Door: " + rc);
             reader.close();
             writer.close();
             sock.close();
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            DeviceLog.d("tapia", "doOpenSesami::NameNotFoundException", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            DeviceLog.d("tapia", "doOpenSesami::IOException", e);
         }
     }
 
     @Override
     protected void onPostExecute(Void params) {
         super.onPostExecute(params);
-        //++ Log.d("tapia", "async task onPostExecute");
+        //++ DeviceLog.d("tapia", "async task onPostExecute");
         watcher.onCompleteRecognition(names);
     }
 }

@@ -70,7 +70,7 @@ public class Watcher implements Runnable {
         try {
             camera.setPreviewTexture(surface);
         } catch (IOException e) {
-            Log.d("tapia", "setPreviewTexture failed.");
+            DeviceLog.d("tapia", "setPreviewTexture failed.", e);
         }
         Parameters params = camera.getParameters();
         params.setPictureSize(1280, 768);
@@ -96,7 +96,7 @@ public class Watcher implements Runnable {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                Log.d("tapia", "camera");
+                DeviceLog.d("tapia", "camera", e);
             }
             capture(camera);
         }
@@ -118,7 +118,7 @@ public class Watcher implements Runnable {
             pictureTaking = true;
             cameraInit(camera);
             camera.autoFocus(autoFocusCallback);
-            Log.d("tapia", "autoFocus called.");
+            DeviceLog.d("tapia", "autoFocus called.");
         }
         return DetectResult.NOT_FOUND;
     }
@@ -130,11 +130,11 @@ public class Watcher implements Runnable {
                     camera.takePicture(null, null, pictureCallback);
                 } catch (RuntimeException e) {
                     e.printStackTrace();
-                    Log.d("tapia", "Exception onAutoFocus");
+                    DeviceLog.d("tapia", "Exception onAutoFocus", e);
                 }
-                Log.d("tapia", "onAutoFocus");
+                DeviceLog.d("tapia", "onAutoFocus");
             } else {
-                Log.d("tapia", "watcher stopped, so do nothing.(onAutoFocus)");
+                DeviceLog.d("tapia", "watcher stopped, so do nothing.(onAutoFocus)");
             }
         }
     };
@@ -142,7 +142,7 @@ public class Watcher implements Runnable {
     private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
             if (!isStopped()) {
-                Log.d("tapia", "onPictureTaken");
+                DeviceLog.d("tapia", "onPictureTaken");
                 String saveDir = Environment.getExternalStorageDirectory().getPath() + "/tapia";
 
                 File file = new File(saveDir);
@@ -177,7 +177,7 @@ public class Watcher implements Runnable {
 
                 cameraUninit(camera);
             } else {
-                Log.d("tapia", "watcher stopped, so do nothing.(onPictureTaken)");
+                DeviceLog.d("tapia", "watcher stopped, so do nothing.(onPictureTaken)");
             }
         }
     };
@@ -201,7 +201,7 @@ public class Watcher implements Runnable {
     }
 
     public void onCompleteRecognition(ArrayList<String> names) {
-        Log.d("tapia", "I'm working.");
+        DeviceLog.d("tapia", "I'm working.");
         unregistAndroidDB(imgPath);
         activity.onRecognitionCompleted(names);
         pictureTaking = false;
