@@ -24,6 +24,13 @@ android {
             debuggable true
         }
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -33,7 +40,7 @@ dependencies {
     compile 'com.github.kenglxn.QRGen:android:2.1.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'org.apache.directory.studio:org.apache.commons.io:2.4'
-    //compile 'com.tapia.mji:tapialib:1.0.7'
-    //compile project(':tapialib_1.0.3')
-    compile(name:'tapialib-1.0.7', ext:'aar')
+    compile 'com.tapia.mji:tapialib:1.0.7'
+    // compile project(':tapialib_1.0.3')
+    // compile(name:'tapialib-1.0.7', ext:'aar')
 }
