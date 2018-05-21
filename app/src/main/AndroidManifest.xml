@@ -66,7 +66,7 @@
         <meta-data
             android:name="license_key"
             android:value="a9*SROZV0F7CGYSSFH01cc/?PAPa(HSE" />
-<!-- 本番
+<!-- 本番 -->
         <meta-data
             android:name="labellio_api_url"
             android:value="http://172.31.22.218/l4f/api.php" />
@@ -75,8 +75,9 @@
             android:value="925d731d-bf63-4838-92cf-e6bb631fdc87" />
         <meta-data
             android:name="opensesami_server"
-            android:value="172.31.92.121" /> -->
-<!-- テスト -->
+            android:value="172.31.92.121" />
+<!-- 本番 -->
+<!-- テスト
         <meta-data
             android:name="labellio_api_url"
             android:value="http://ec2-34-198-238-4.compute-1.amazonaws.com/l4f/api" />
@@ -86,7 +87,7 @@
         <meta-data
             android:name="opensesami_server"
             android:value="192.168.11.59" />
-<!-- テスト -->
+-->
         <meta-data
             android:name="opensesami_port"
             android:value="9998" />
@@ -96,6 +97,9 @@
         <meta-data
             android:name="fire_volume_threshold"
             android:value="2000" />
+        <meta-data
+            android:name="distance_threshold"
+            android:value="0.5" />
     </application>
 
 </manifest>

@@ -74,9 +74,17 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
             for (int i = 0; i < faces.length(); i++) {
                 JSONObject face = faces.getJSONObject(i);
                 if (face.has("PERSON_CODE")) {
-                    actionOpenSesami(face);
-                    if (face.has("PERSON_NAME")) {
-                        names.add(face.getString("PERSON_NAME"));
+                    boolean opened = actionOpenSesami(face);
+                    if (opened) {
+                        if (face.has("PERSON_NAME")) {
+                            String name = face.getString("PERSON_NAME");
+                            if (face.has("BIRTHDAY")) {
+                                if (face.getString("BIRTHDAY").equals("1")) {
+                                    name += "::talk";
+                                }
+                            }
+                            names.add(name);
+                        }
                     }
                 }
             }
@@ -85,14 +93,24 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void actionOpenSesami(JSONObject face) {
+    private boolean actionOpenSesami(JSONObject face) {
+        boolean opened = false;
         try {
             String code = face.getString("PERSON_CODE");
             if (!code.equals("00000000")) {
-                String name = "";
-                if (face.has("PERSON_NAME")) {
-                    name = face.getString("PERSON_NAME");
-                    doOpenSesami(code, name, face);
+                if (face.has("RECOGNITION_DISTANCE")) {
+                    double distance = face.getDouble("RECOGNITION_DISTANCE");
+                    Context context = TapiaApp.getAppContext();
+                    ApplicationInfo appliInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+                    float threshold = appliInfo.metaData.getFloat("distance_threshold");
+                    if (distance <= threshold) {
+                        String name = "";
+                        if (face.has("PERSON_NAME")) {
+                            name = face.getString("PERSON_NAME");
+                            doOpenSesami(code, name, face);
+                            opened = true;
+                        }
+                    }
                 }
             } else {
                 DeviceLog.d("tapia","face recognition code Unknown.");
@@ -100,7 +118,10 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
             }
         } catch (JSONException e) {
             DeviceLog.d("tapia", "JSONException in actionOpenSesami", e);
+        } catch (PackageManager.NameNotFoundException e) {
+            DeviceLog.d("tapia", "get RECOGNITION_DISTANCE", e);
         }
+        return opened;
     }
 
     private void doOpenSesami(String code, String name, JSONObject face) {

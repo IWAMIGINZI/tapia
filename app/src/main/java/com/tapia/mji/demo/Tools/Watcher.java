@@ -73,7 +73,7 @@ public class Watcher implements Runnable {
             DeviceLog.d("tapia", "setPreviewTexture failed.", e);
         }
         Parameters params = camera.getParameters();
-        params.setPictureSize(1280, 768);
+        params.setPictureSize(640, 384);
         camera.setParameters(params);
         camera.startPreview();
     }
@@ -94,7 +94,7 @@ public class Watcher implements Runnable {
 
         while (running) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 DeviceLog.d("tapia", "camera", e);
             }
@@ -117,8 +117,13 @@ public class Watcher implements Runnable {
         if (!pictureTaking) {
             pictureTaking = true;
             cameraInit(camera);
-            camera.autoFocus(autoFocusCallback);
-            DeviceLog.d("tapia", "autoFocus called.");
+            if (false) {
+                camera.autoFocus(autoFocusCallback);
+                DeviceLog.d("tapia", "autoFocus called.");
+            } else {
+                camera.takePicture(null, null, pictureCallback);
+                DeviceLog.d("tapia", "takePicuture called.");
+            }
         }
         return DetectResult.NOT_FOUND;
     }

@@ -32,7 +32,7 @@ public class DeviceLog {
             String dirpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath() + "/log";
             File dir = new File(dirpath);
             if (!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
             SimpleDateFormat fn = new SimpleDateFormat("yyyyMMdd");
             String path = dirpath + "/" + tag + "-" + fn.format(d) + ".log";
