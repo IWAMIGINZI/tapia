@@ -978,7 +978,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                             talk = opened.substring(0, idx);
                         }
                     }
-                    ttsProvider.ask(talk + "さん、いらっしゃいませ。", sttProvider);
+                    ttsProvider.ask(talk + "さん、お入りください。", sttProvider);
                 }
             } catch (LanguageNotSupportedException e) {
                 DeviceLog.d("tapia", "LanguageNotSupportedException", e);
