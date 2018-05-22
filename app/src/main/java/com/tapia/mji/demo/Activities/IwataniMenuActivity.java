@@ -2,25 +2,14 @@ package com.tapia.mji.demo.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 
-import com.tapia.mji.demo.Actions.MySimpleAction;
 import com.tapia.mji.demo.R;
-import com.tapia.mji.tapialib.Actions.SimpleAction;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
 import com.tapia.mji.tapialib.Exceptions.LanguageNotSupportedException;
 import com.tapia.mji.tapialib.Languages.Language;
-import com.tapia.mji.tapialib.Providers.Interfaces.STTProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.TTSProvider;
 import com.tapia.mji.tapialib.TapiaApp;
-import com.tapia.mji.tapialib.Utils.TapiaAnimation;
-import com.tapia.mji.tapialib.Utils.TapiaRobot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**

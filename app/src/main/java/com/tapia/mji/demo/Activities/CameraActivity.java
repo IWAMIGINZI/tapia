@@ -47,7 +47,7 @@ public class CameraActivity extends Activity{
 
         //カメラプレビュー画面の呼び出し
         FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
-        mCamPreview = new CameraPreview(this, mCam);
+        mCamPreview = new CameraPreview(this, -1);
         preview.addView(mCamPreview);
 
         //プレビュー画面をタッチした時の処理

@@ -5,33 +5,32 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.tapia.mji.demo.Actions.MySimpleAction;
 import com.tapia.mji.demo.R;
-import com.tapia.mji.tapialib.Actions.Action;
-import com.tapia.mji.tapialib.Actions.SimpleAction;
+import com.tapia.mji.demo.Tools.DeviceLog;
+import com.tapia.mji.demo.Tools.RecognitionTimer;
+import com.tapia.mji.demo.Tools.WatcherController;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
 import com.tapia.mji.tapialib.Exceptions.LanguageNotSupportedException;
 import com.tapia.mji.tapialib.Languages.Language;
-import com.tapia.mji.tapialib.Providers.Interfaces.NLUProvider;
-import com.tapia.mji.tapialib.Providers.Interfaces.STTProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.TTSProvider;
 import com.tapia.mji.tapialib.TapiaApp;
 import com.tapia.mji.tapialib.Utils.TapiaAnimation;
 
 
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -39,15 +38,19 @@ import java.util.TimerTask;
  */
 public class SleepActivity extends TapiaActivity implements SensorEventListener {
     TapiaAnimation[] tapiaAnimation = new TapiaAnimation[14];
+    WatcherController wc;
 
     //センサマネージャの取得
     private SensorManager sensorManager;
 
     //アニメーション切り替え用
-    Timer timer = new Timer();
+    Timer timer = null;
     int time = 60000;
+    Timer recognitionTimer = null;
+    boolean talking = false;
 
-    TTSProvider.OnStateChangeListener onTTSstateListener;
+    // TTSProvider.OnStateChangeListener onTTSstateListener;
+    Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         /*宣言部***********************************************************************************/
 
+        // 画面をスリープさせない
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //待機画面表示
         setContentView(R.layout.eyes_layout);
 
@@ -80,6 +85,11 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         //offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
         //final ArrayList actions=new ArrayList<>();
         //sttProvider.listen();   //録音の開始
+        ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+            public void onSpeechComplete() {
+                talking = false;
+            }
+        });
 
         //内線番号表示用
         final Intent intentsitei = new Intent(activity, NaisenKakudaiSiteiActivity.class);
@@ -684,7 +694,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         }));
 
         //録音認識完了
-        sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
+        /*sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
             @Override
             public void onRecognitionComplete(List<String> list){
                 offlineNLUProvider.setOnAnalyseCompleteListener(new NLUProvider.OnAnalyseCompleteListener() {
@@ -703,13 +713,12 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
                     @Override
                     public void onSpeechComplete(){
-                        sttProvider.listen();
+                        //sttProvider.listen();
                         //sttProvider.stopListening();
                     }
                 });
             }
-        });
-*/
+        });*/
     }
 
     //Activity終了の際呼ばれる
@@ -724,9 +733,20 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         //タイマキャンセル
         timer.cancel();
+        timer = null;
+        if (recognitionTimer != null) {
+            recognitionTimer.cancel();
+            recognitionTimer = null;
+        }
 
         //音のする方向へ動く処理のキャンセル
         //stopSoundLocation(this);
+
+        // バックグランドカメラ監視停止
+        wc.stop();
+        wc = null;
+
+        talking = false;
     }
 
 
@@ -746,7 +766,13 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         //音のする方向へ回転
         //startSoundLocation(this);
 
+        talking = false;
+
         //一定時間(1分)毎に処理を行う
+        if (timer != null) {
+            timer.cancel();
+        }
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -874,16 +900,19 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 }
                 int log=tapiaAnimation[n].getIndex();
                 Log.v("テスト",String.valueOf(log));
-
             }
         }, 0, time);
 
         //近接センサ登録
-        List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_PROXIMITY);
-        if (sensors.size() > 0) {
-            Sensor s = sensors.get(0);
-            sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
-        }
+//        List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_PROXIMITY);
+//        if (sensors.size() > 0) {
+//            Sensor s = sensors.get(0);
+//            sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
+//        }
+
+        // バックグラウンドカメラ監視
+        wc = new WatcherController(this);
+        wc.start();
     }
 
     @Override
@@ -903,7 +932,68 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
         }
     }
 
+    public void onRecognitionCompleted(ArrayList<String> names) {
+        String opened = null;
+        try {
+            if (names.size() > 0) {
+                String name = "";
+                for (int i = 0; i < names.size(); i++) {
+                    if (i != 0) {
+                        name += "\n";
+                    }
+                    Pattern p = Pattern.compile("^([^:]*)::(.*)$");
+                    Matcher m = p.matcher(names.get(i));
+                    if (m.matches()) {
+                        name += m.group(1);
+                        if (opened == null && m.group(2).equals("talk")) {
+                            opened = m.group(1);
+                        }
+                    } else {
+                        name += names.get(i);
+                    }
+                }
+                TextView tvPersonName = (TextView) findViewById(R.id.textPersonName);
+                tvPersonName.setText(name);
+                if (recognitionTimer != null) {
+                    recognitionTimer.cancel();
+                    recognitionTimer = null;
+                }
+                recognitionTimer = new Timer();
+                recognitionTimer.schedule(new RecognitionTimer(this), 3 * 1000);
+            }
+        } catch (RuntimeException e) {
+            DeviceLog.d("tapia", "onRecognitionCompleted", e);
+        }
+        if (opened != null) {
+            try {
+                if (!talking) {
+                    talking = true;
+                    String talk = opened;
+                    int idx = opened.indexOf(" ");
+                    if (idx > 0) {
+                        talk = opened.substring(0, idx);
+                    } else {
+                        idx = opened.indexOf("　");
+                        if (idx > 0) {
+                            talk = opened.substring(0, idx);
+                        }
+                    }
+                    ttsProvider.ask(talk + "さん、お入りください。", sttProvider);
+                }
+            } catch (LanguageNotSupportedException e) {
+                DeviceLog.d("tapia", "LanguageNotSupportedException", e);
+            }
+        }
+    }
+
+    public void onRecognitionCompleteTimer() {
+        try {
+            TextView tvPersonName = (TextView) findViewById(R.id.textPersonName);
+            tvPersonName.setText("");
+            recognitionTimer.cancel();
+            recognitionTimer = null;
+        } catch (RuntimeException e) {
+            DeviceLog.d("tapia", "onRecognitionCompleteTimer", e);
+        }
+    }
 }
-
-
-
