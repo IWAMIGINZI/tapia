@@ -41,7 +41,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="@string/daiiti"
-            android:textSize="40sp"
+            android:textSize="35sp"
             android:onClick="onClick"
             tools:ignore="ButtonStyle,NestedWeights" />
 
@@ -51,16 +51,16 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:text="@string/daini"
-            android:textSize="40sp"
+            android:textSize="35sp"
             android:onClick="onClick"
             tools:ignore="ButtonStyle" />
 
         <Button
-            android:id="@+id/daisan"
+            android:id="@+id/support"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="@string/daisan"
+            android:text="@string/support"
             android:textSize="40sp"
             android:onClick="onClick"
             tools:ignore="ButtonStyle" />
@@ -95,12 +95,12 @@
             tools:ignore="ButtonStyle" />
 
         <Button
-            android:id="@+id/support"
+            android:id="@+id/Projecttokatu"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="@string/support"
-            android:textSize="40sp"
+            android:text="@string/Projecttokatu"
+            android:textSize="30sp"
             android:onClick="onClick"
             tools:ignore="ButtonStyle" />
 

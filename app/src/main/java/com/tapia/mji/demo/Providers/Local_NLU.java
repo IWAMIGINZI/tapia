@@ -53,15 +53,65 @@ public class Local_NLU implements OfflineNLUProvider {
         if(language == Language.LanguageID.ENGLISH_US || language == Language.LanguageID.ENGLISH_UK) {
             myKeywords.add(new Keyword(new String[]{"what", "time"}, GIVE_TIME));
             myKeywords.add(new Keyword(new String[]{"rotate", "degree"}, MyAction.MyActionType.ROTATE));
-
-
+            myKeywords.add(new Keyword(new String[]{"ICT"},MyAction.MyActionType.ICT));
         }
         else if(language == Language.LanguageID.JAPANESE){
             myKeywords.add(new Keyword(new String[]{"何時"}, MyAction.MyActionType.GIVE_TIME));
-            myKeywords.add(new Keyword(new String[]{"何曜日"}, MyAction.MyActionType.GIVE_DATE));
+            myKeywords.add(new Keyword(new String[]{"なんじ"}, MyAction.MyActionType.GIVE_TIME));
+            myKeywords.add(new Keyword(new String[]{"何曜日"}, MyAction.MyActionType.WEEK));
+            myKeywords.add(new Keyword(new String[]{"なんようび"}, MyAction.MyActionType.WEEK));
             myKeywords.add(new Keyword(new String[]{"何日"}, MyAction.MyActionType.GIVE_DATE));
+            myKeywords.add(new Keyword(new String[]{"なんにち"}, MyAction.MyActionType.GIVE_DATE));
             myKeywords.add(new Keyword(new String[]{"回転", "度"}, MyAction.MyActionType.ROTATE));
-            myKeywords.add(new Keyword(new String[]{"名前"},MyAction.MyActionType.INTRODUCE));
+            myKeywords.add(new Keyword(new String[]{"天気"},MyAction.MyActionType.WEATHER));
+            myKeywords.add(new Keyword(new String[]{"てんき"},MyAction.MyActionType.WEATHER));
+            myKeywords.add(new Keyword(new String[]{"ニュース"},MyAction.MyActionType.NEWS));
+            myKeywords.add(new Keyword(new String[]{"カメラ"},MyAction.MyActionType.CAMERA));
+            myKeywords.add(new Keyword(new String[]{"占い"},MyAction.MyActionType.FORTUNE));
+            myKeywords.add(new Keyword(new String[]{"うらない"},MyAction.MyActionType.FORTUNE));
+            myKeywords.add(new Keyword(new String[]{"はじめまして"},MyAction.MyActionType.NICETOMEETYOU));
+            myKeywords.add(new Keyword(new String[]{"おはよう"},MyAction.MyActionType.GOODMORNING));
+            myKeywords.add(new Keyword(new String[]{"こんにちは"},MyAction.MyActionType.HELLO));
+            myKeywords.add(new Keyword(new String[]{"こんばんは"},MyAction.MyActionType.GOODEVENING));
+            myKeywords.add(new Keyword(new String[]{"ただいま"},MyAction.MyActionType.IMHOME));
+            myKeywords.add(new Keyword(new String[]{"おやすみ"},MyAction.MyActionType.GOODNIGHT));
+            myKeywords.add(new Keyword(new String[]{"サポート"},MyAction.MyActionType.SUPPORT));
+            myKeywords.add(new Keyword(new String[]{"ヘルプ"},MyAction.MyActionType.SUPPORT));
+            myKeywords.add(new Keyword(new String[]{"第１"},MyAction.MyActionType.DIVISION1));
+            myKeywords.add(new Keyword(new String[]{"第２"},MyAction.MyActionType.DIVISION2));
+            myKeywords.add(new Keyword(new String[]{"第３"},MyAction.MyActionType.DIVISION3));
+            myKeywords.add(new Keyword(new String[]{"だいいち"},MyAction.MyActionType.DIVISION1));
+            myKeywords.add(new Keyword(new String[]{"だいに"},MyAction.MyActionType.DIVISION2));
+            myKeywords.add(new Keyword(new String[]{"だいさん"},MyAction.MyActionType.DIVISION3));
+            myKeywords.add(new Keyword(new String[]{"技術"},MyAction.MyActionType.DIVISIONTECH));
+            myKeywords.add(new Keyword(new String[]{"ぎじゅつ"},MyAction.MyActionType.DIVISIONTECH));
+            myKeywords.add(new Keyword(new String[]{"基盤"},MyAction.MyActionType.KIBAN));
+            myKeywords.add(new Keyword(new String[]{"きばん"},MyAction.MyActionType.KIBAN));
+            myKeywords.add(new Keyword(new String[]{"統括"},MyAction.MyActionType.TOKATU));
+            myKeywords.add(new Keyword(new String[]{"とうかつ"},MyAction.MyActionType.TOKATU));
+            myKeywords.add(new Keyword(new String[]{"プロジェクト"},MyAction.MyActionType.TOKATU));
+            myKeywords.add(new Keyword(new String[]{"ＩＣＴ"},MyAction.MyActionType.ICT));
+            myKeywords.add(new Keyword(new String[]{"あいしーてぃー"},MyAction.MyActionType.ICT));
+            myKeywords.add(new Keyword(new String[]{"第１","営業"},MyAction.MyActionType.EIGYO1));
+            myKeywords.add(new Keyword(new String[]{"第２","営業"},MyAction.MyActionType.EIGYO2));
+            myKeywords.add(new Keyword(new String[]{"第３","営業"},MyAction.MyActionType.EIGYO3));
+            myKeywords.add(new Keyword(new String[]{"だいいち","えいぎょう"},MyAction.MyActionType.EIGYO1));
+            myKeywords.add(new Keyword(new String[]{"だいに","えいぎょう"},MyAction.MyActionType.EIGYO2));
+            myKeywords.add(new Keyword(new String[]{"だいさん","えいぎょう"},MyAction.MyActionType.EIGYO3));
+            myKeywords.add(new Keyword(new String[]{"第１","運用"},MyAction.MyActionType.UNYO1));
+            myKeywords.add(new Keyword(new String[]{"第２","運用"},MyAction.MyActionType.UNYO2));
+            myKeywords.add(new Keyword(new String[]{"第３","運用"},MyAction.MyActionType.UNYO3));
+            myKeywords.add(new Keyword(new String[]{"だいいち","うんよう"},MyAction.MyActionType.UNYO1));
+            myKeywords.add(new Keyword(new String[]{"だいに","うんよう"},MyAction.MyActionType.UNYO2));
+            myKeywords.add(new Keyword(new String[]{"だいさん","うんよう"},MyAction.MyActionType.UNYO3));
+            myKeywords.add(new Keyword(new String[]{"第１","開発"},MyAction.MyActionType.KAIHATU1));
+            myKeywords.add(new Keyword(new String[]{"第２","開発"},MyAction.MyActionType.KAIHATU2));
+            myKeywords.add(new Keyword(new String[]{"第３","開発"},MyAction.MyActionType.KAIHATU3));
+            myKeywords.add(new Keyword(new String[]{"だいいち","かいはつ"},MyAction.MyActionType.KAIHATU1));
+            myKeywords.add(new Keyword(new String[]{"だいに","かいはつ"},MyAction.MyActionType.KAIHATU2));
+            myKeywords.add(new Keyword(new String[]{"だいさん","かいはつ"},MyAction.MyActionType.KAIHATU3));
+            myKeywords.add(new Keyword(new String[]{"管理"},MyAction.MyActionType.KANRI));
+            myKeywords.add(new Keyword(new String[]{"かんり"},MyAction.MyActionType.KANRI));
         }
     }
 

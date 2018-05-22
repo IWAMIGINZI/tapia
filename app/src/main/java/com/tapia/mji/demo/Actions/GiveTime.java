@@ -18,6 +18,7 @@ public class GiveTime extends MyAction {
     public Date getTime(){
         return onGiveTimeListener.time;
     }
+
     public void setTime(Date time){
         onGiveTimeListener.time = time;
     }

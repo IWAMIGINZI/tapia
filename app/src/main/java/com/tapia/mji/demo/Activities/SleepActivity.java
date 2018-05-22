@@ -5,38 +5,33 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewDebug;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.tapia.mji.demo.Actions.MySimpleAction;
-import com.tapia.mji.demo.Actions.Rotate;
 import com.tapia.mji.demo.R;
 import com.tapia.mji.tapialib.Actions.Action;
 import com.tapia.mji.tapialib.Actions.SimpleAction;
 import com.tapia.mji.tapialib.Activities.TapiaActivity;
 import com.tapia.mji.tapialib.Exceptions.LanguageNotSupportedException;
 import com.tapia.mji.tapialib.Languages.Language;
+import com.tapia.mji.tapialib.Providers.Interfaces.NLUProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.STTProvider;
 import com.tapia.mji.tapialib.Providers.Interfaces.TTSProvider;
 import com.tapia.mji.tapialib.TapiaApp;
 import com.tapia.mji.tapialib.Utils.TapiaAnimation;
-import com.tapia.mji.tapialib.Utils.TapiaRobot;
 
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.content.Context.SENSOR_SERVICE;
-import static com.tapia.mji.tapialib.Utils.TapiaRobot.startSoundLocation;
-import static com.tapia.mji.tapialib.Utils.TapiaRobot.stopSoundLocation;
 
 
 /**
@@ -51,6 +46,8 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
     //アニメーション切り替え用
     Timer timer = new Timer();
     int time = 60000;
+
+    TTSProvider.OnStateChangeListener onTTSstateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +74,32 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
 
         //会話
         TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
+        //TapiaApp.setCurrentLanguage(Language.LanguageID.ENGLISH_UK);
         sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
         ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
-        offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
-        final ArrayList actions=new ArrayList<>();
+        //offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
+        //final ArrayList actions=new ArrayList<>();
+        //sttProvider.listen();   //録音の開始
 
+        //内線番号表示用
+        final Intent intentsitei = new Intent(activity, NaisenKakudaiSiteiActivity.class);
+        final ExtensionNumber en=new ExtensionNumber();
+        final NumberSplit ns=new NumberSplit();
 
+        //現在の日時を取得
+/*
+        Calendar cal=Calendar.getInstance();
+        final String month=String.valueOf(cal.get(Calendar.MONTH)+1);   //月
+        final String day=String.valueOf(cal.get(Calendar.DAY_OF_MONTH));    //日
+        final String hour=String.valueOf(cal.get(Calendar.HOUR_OF_DAY));    //時
+        final String minute=String.valueOf(cal.get(Calendar.MINUTE));   //分
+        final String week=String.valueOf(cal.get(Calendar.DAY_OF_WEEK));    //曜日
+*/
+        //Log.v("テスト",);
+        //Log.v("テスト",month+"月" +day+"日");
+
+        //ブラウザ表示画面
+        //final Intent browser=new Intent(activity,BrowserActivity.class);
 
         /*画面遷移*********************************************************************************/
 
@@ -105,14 +122,65 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             }
         });
 
-        /*言葉認識*********************************************************************************/
+/*
+        sttProvider.listen();   //録音の開始
 
-        actions.add(new MySimpleAction.Introduce(new SimpleAction.OnSimpleActionListener(){
+        sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener() {
+
+            public void onRecognitionComplete(List<String> list) {
+                try {
+                    ttsProvider.say(list.get(0).toString());
+                } catch (LanguageNotSupportedException e) {
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+
+                    public void onSpeechComplete() {
+                        sttProvider.listen();
+                        //sttProvider.stopListening();
+                    }
+                });
+            }
+
+        });
+*/
+
+        /*音声認識*********************************************************************************/
+
+/*
+        //「天気」
+        actions.add(new MySimpleAction.Weather(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                browser.putExtra("flag","1");
+                startActivity(browser);
+            }
+        }));
+
+        //「ニュース」
+        actions.add(new MySimpleAction.News(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                browser.putExtra("flag","2");
+                startActivity(browser);
+            }
+        }));
+
+        //「占い」
+        actions.add(new MySimpleAction.Fortune(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                browser.putExtra("flag","3");
+                startActivity(browser);
+            }
+        }));
+
+        //「何日」
+        actions.add(new MySimpleAction.Day(new SimpleAction.OnSimpleActionListener(){
             @Override
             public void onSimpleAction(){
                 try{
-                    startActivity(new Intent(activity, IwataniMenuActivity.class));
-                    ttsProvider.ask("私の名前はタピアです",sttProvider);
+                    ttsProvider.ask("今日は"+month+"月"+day+"日です",sttProvider);
                 }catch(LanguageNotSupportedException e){
                     e.printStackTrace();
                 }
@@ -120,22 +188,528 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
             }
         }));
 
-        sttProvider.listen();   //録音の開始
+        //「何時」
+        actions.add(new MySimpleAction.Time(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask(hour+"時"+minute+"分です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「何曜日」
+        actions.add(new MySimpleAction.Week(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                String week_name=null;
+                switch (week){
+                    case "1":
+                        week_name="にち";
+                        break;
+                    case "2":
+                        week_name="げつ";
+                        break;
+                    case "3":
+                        week_name="か";
+                        break;
+                    case "4":
+                        week_name="すい";
+                        break;
+                    case "5":
+                        week_name="もく";
+                        break;
+                    case "6":
+                        week_name="きん";
+                        break;
+                    case "7":
+                        week_name="ど";
+                        break;
+                }
+                try{
+                    ttsProvider.ask(week_name+"曜日です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「カメラ」
+        actions.add(new MySimpleAction.Camera(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                startActivity(new Intent(activity,CameraActivity.class));
+            }
+        }));
+
+        //「はじめまして」
+        actions.add(new MySimpleAction.Nicetomeetyou(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("はじめましてタピアです",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「おはよう」
+        actions.add(new MySimpleAction.Goodmorning(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("おはようございます いらっしゃいませ",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「こんにちは」
+        actions.add(new MySimpleAction.Hello(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("こんにちは いらっしゃいませ",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「こんばんは」
+        actions.add(new MySimpleAction.Goodevening(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("こんばんは 遅くまでお疲れ様です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「ただいま」
+        actions.add(new MySimpleAction.Imhome(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("おかえりなさい　お疲れ様です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「おやすみ」
+        actions.add(new MySimpleAction.Goodnight(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                try{
+                    ttsProvider.ask("今日も一日お疲れ様でした",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                ttsProvider.setOnSpeechCompleteListener(null);
+            }
+        }));
+
+        //「サポート」or「ヘルプ」
+        actions.add(new MySimpleAction.Support(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.support; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {}
+                });
+            }
+        }));
+
+        //「第一事業部」
+        actions.add(new MySimpleAction.Division1(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo1; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第二事業部」
+        actions.add(new MySimpleAction.Division2(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo2; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第三事業部」
+        actions.add(new MySimpleAction.Division3(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo3; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「技術本部」
+        actions.add(new MySimpleAction.Divisiontech(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.ict; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「管理部」
+        actions.add(new MySimpleAction.Kanri(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kanri; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「技術本部-基盤」
+        actions.add(new MySimpleAction.Kiban(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kiban; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「技術本部-プロジェクト統轄」
+        actions.add(new MySimpleAction.Tokatu(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.tokatu; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「技術本部-ICT」
+        actions.add(new MySimpleAction.Ict(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.ict; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第一事業部-営業部」
+        actions.add(new MySimpleAction.Eigyo1(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo1; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第二事業部-営業部」
+        actions.add(new MySimpleAction.Eigyo2(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo2; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第三事業部-営業部」
+        actions.add(new MySimpleAction.Eigyo3(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.eigyo3; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第一事業部-運用部」
+        actions.add(new MySimpleAction.Unyo1(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.unyo1; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第二事業部-運用部」
+        actions.add(new MySimpleAction.Unyo2(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.unyo2; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第三事業部-運用部」
+        actions.add(new MySimpleAction.Unyo3(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.unyo3; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第一事業部-開発部」
+        actions.add(new MySimpleAction.Kaihatu1(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kaihatu1; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第二事業部-開発部」
+        actions.add(new MySimpleAction.Kaihatu2(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kaihatu2; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
+
+        //「第三事業部-開発部」
+        actions.add(new MySimpleAction.Kaihatu3(new SimpleAction.OnSimpleActionListener(){
+            @Override
+            public void onSimpleAction(){
+                final String number=en.kaihatu3; //内線番号
+                String new_number=ns.Execution(number);
+                try{
+                    ttsProvider.ask("内線番号は"+new_number+"です",sttProvider);
+                }catch(LanguageNotSupportedException e){
+                    e.printStackTrace();
+                }
+                //終話後の処理
+                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener() {
+                    @Override
+                    public void onSpeechComplete() {
+                    }
+                });
+            }
+        }));
 
         //録音認識完了
         sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
             @Override
             public void onRecognitionComplete(List<String> list){
+                offlineNLUProvider.setOnAnalyseCompleteListener(new NLUProvider.OnAnalyseCompleteListener() {
+                    @Override
+                    public void OnAnalyseComplete(Action action) {
+                        if(action==null){
+                            try{
+                                ttsProvider.say("もう一度お願いします");
+                            }catch(LanguageNotSupportedException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
                 offlineNLUProvider.analyseText(list,actions);
                 ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
                     @Override
                     public void onSpeechComplete(){
-                        sttProvider.stopListening();
+                        sttProvider.listen();
+                        //sttProvider.stopListening();
                     }
                 });
             }
         });
-
+*/
     }
 
     //Activity終了の際呼ばれる
@@ -179,7 +753,6 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 //乱数によって、アニメーションを切り替える
                 RandomNumber rm = new RandomNumber();
                 int n = rm.RN();
-                //最大10種類のアニメーションを設定可能
                 //処理:乱数毎にアニメーションを設定
                 //上記以外のアニメーションを停止する
                 switch (n) {
@@ -299,6 +872,9 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                             tapiaAnimation[i].stopAnimation();
                         }
                 }
+                int log=tapiaAnimation[n].getIndex();
+                Log.v("テスト",String.valueOf(log));
+
             }
         }, 0, time);
 

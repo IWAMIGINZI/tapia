@@ -166,14 +166,10 @@
     <string name="gizyutu">技術本部</string>
     <string name="daiiti">第一事業部</string>
     <string name="daini">第二事業部</string>
-    <string name="daisan">第三事業部</string>
     <string name="kanri">管理部</string>
     <string name="kanri2">人事総務/経理</string>
     <string name="back">戻る</string>
-    <string name="eigyo">営業部</string>
     <string name="kaihatu">開発部</string>
-    <string name="unyo">運用部</string>
-    <string name="tokatu">プロジェクト統轄部</string>
     <string name="kiban">基盤ソリューション部</string>
     <string name="ict">ICTソリューション推進部</string>
     <string name="kakutei">確定</string>
@@ -190,5 +186,14 @@
     <string name="rotatesetting">角度設定</string>
     <string name="attention2">内線電話で直接お掛けください</string>
     <string name="support">サポートデスク</string>
+    <string name="str">みなさん、ここは岩谷情報システムのブースです。
+        弊社は、ガス、エネルギーを中心とした、開発、運用を行っている会社です。
+    詳しい内容を、聞きたいかたは、ぜひ説明会に参加してください。</string>
+    <string name="WINsupport">WINサポート部</string>
+    <string name="WINEsupport">WIN-Eサポート部</string>
+    <string name="Syssupport">システムサポート部</string>
+    <string name="Hinsitukanri">品質管理部</string>
+    <string name="Projectkanri">プロジェクト管理部</string>
+    <string name="Projecttokatu">プロジェクト統括室</string>
     >
 </resources>

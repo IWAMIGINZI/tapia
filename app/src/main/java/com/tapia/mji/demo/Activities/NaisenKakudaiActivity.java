@@ -44,10 +44,7 @@ public class NaisenKakudaiActivity extends TapiaActivity {
 
         //日本語設定
         TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
-        sttProvider=TapiaApp.currentLanguage.getOnlineSTTProvider();
         ttsProvider=TapiaApp.currentLanguage.getTTSProvider();
-        offlineNLUProvider=TapiaApp.currentLanguage.getOfflineNLUProvider();
-        final ArrayList actions=new ArrayList<>();
 
         /*話す***********************************************************************************/
 
@@ -65,93 +62,78 @@ public class NaisenKakudaiActivity extends TapiaActivity {
 
         /*画面表示処理*****************************************************************************/
 
-        //NaisenActivity_2からflagを受け取る
+        //flagとnumberを受け取る
         Intent intent=getIntent();
         String data=intent.getStringExtra("flag");
         String number=intent.getStringExtra("number");
 
+        //内線番号の表示
+        naisenbangou.setText(number);
+
         //NaisenActivity_2からのflagで分岐し、押されたボタンの内線番号を拡大表示する
-        //営業部
-        if(data.matches(".*"+"1")){
-            title.setText(R.string.eigyo);
+        //第一事業部
+        if(data.matches("1"+".*")){
             switch (data){
                 case "11":
-                    //第一事業部
-                    naisenbangou.setText(number);
+                    //WINサポート部
+                    title.setText(R.string.WINsupport);
                     break;
-                case "21":
-                    //第二事業部
-                    naisenbangou.setText(number);
+                case "12":
+                    //WIN-Eサポート部
+                    title.setText(R.string.WINEsupport);
                     break;
-                case "31":
-                    //第三事業部
-                    naisenbangou.setText(number);
+                case "13":
+                    //開発部
+                    title.setText(R.string.kaihatu);
                     break;
             }
         }
-        //運用部
-        if(data.matches(".*"+"2")){
-            title.setText(R.string.unyo);
+        //第二事業部
+        if(data.matches("2"+".*")){
             switch (data){
-                case "12":
-                    //第一事業部
-                    naisenbangou.setText(number);
+                case "21":
+                    //システムサポート部
+                    title.setText(R.string.Syssupport);
                     break;
                 case "22":
-                    //第二事業部
-                    naisenbangou.setText(number);
-                    break;
-                case "32":
-                    //第三事業部
-                    naisenbangou.setText(number);
+                    //開発部
+                    title.setText(R.string.kaihatu);
                     break;
             }
         }
-        //開発部
-        if(data.matches(".*"+"3")){
-            title.setText(R.string.kaihatu);
+        //サポートデスク
+        if(data.equals("3")){
+            title.setText(R.string.support);
+        }
+        //技術本部
+        if(data.matches("4"+".*")){
             switch (data){
-                case "13":
-                    //第一事業部
-                    naisenbangou.setText(number);
+                case "41":
+                    //システムサポート部
+                    title.setText(R.string.kiban);
                     break;
-                case "23":
-                    //第二事業部
-                    naisenbangou.setText(number);
-                    break;
-                case "33":
-                    //第三事業部
-                    naisenbangou.setText(number);
+                case "42":
+                    //開発部
+                    title.setText(R.string.ict);
                     break;
             }
         }
-        //技術本部・管理部・サポートデスク
-        switch (data){
-            case "44":
-                //基盤ソリューション部
-                title.setText(R.string.kiban);
-                naisenbangou.setText(number);
-                break;
-            case "45":
-                //プロジェクト統轄部
-                title.setText(R.string.tokatu);
-                naisenbangou.setText(number);
-                break;
-            case "46":
-                //ICTソリューション推進部
-                title.setText(R.string.ict);
-                naisenbangou.setText(number);
-                break;
-            case "54":
-                //管理部
-                title.setText(R.string.kanri2);
-                naisenbangou.setText(number);
-                break;
-            case "64":
-                //サポートデスク
-                title.setText(R.string.support);
-                naisenbangou.setText(number);
-                break;
+        //管理部
+        if(data.equals("5")){
+            title.setText(R.string.kanri);
+        }
+        //プロジェクト統括室
+        if(data.matches("6"+".*")){
+            switch (data){
+                case "61":
+                    //システムサポート部
+                    title.setText(R.string.Projectkanri);
+                    break;
+                case "62":
+                    //開発部
+                    title.setText(R.string.Hinsitukanri);
+                    break;
+            }
         }
 
         /*アイドル処理*****************************************************************************/
@@ -167,38 +149,6 @@ public class NaisenKakudaiActivity extends TapiaActivity {
                 timelag.setting(timelag.move(activity));
             }
         });
-
-        /*言葉認識*********************************************************************************/
-
-/*
-        actions.add(new MySimpleAction.Introduce(new SimpleAction.OnSimpleActionListener(){
-            @Override
-            public void onSimpleAction(){
-                try{
-                    ttsProvider.ask("私の名前はタピアです",sttProvider);
-                }catch(LanguageNotSupportedException e){
-                    e.printStackTrace();
-                }
-                ttsProvider.setOnSpeechCompleteListener(null);
-            }
-        }));
-
-        sttProvider.listen();   //録音の開始
-
-        //録音認識完了
-        sttProvider.setOnRecognitionCompleteListener(new STTProvider.OnRecognitionCompleteListener(){
-            @Override
-            public void onRecognitionComplete(List<String> list){
-                offlineNLUProvider.analyseText(list,actions);
-                ttsProvider.setOnSpeechCompleteListener(new TTSProvider.OnSpeechCompleteListener(){
-                    @Override
-                    public void onSpeechComplete(){
-                        sttProvider.stopListening();
-                    }
-                });
-            }
-        });
-*/
     }
 
     @Override

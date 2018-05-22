@@ -53,10 +53,6 @@ public class EnvisettingActivity extends TapiaActivity{
         //パーツ宣言
         Button finish=(Button)findViewById(R.id.finish);
 
-        //yahooに繋ぐ
-        Uri uri=Uri.parse("https://www.yahoo.com/");
-        final Intent yahoo=new Intent(Intent.ACTION_VIEW,uri);
-
         /*音量設定*********************************************************************************/
 
         //minusボタン押下
@@ -64,7 +60,8 @@ public class EnvisettingActivity extends TapiaActivity{
             @Override
             public void onClick(View view){
                 //音量を下げる(現在の音量を取得し、1引いた値を設定している)
-                manager.setStreamVolume(AudioManager.STREAM_MUSIC,manager.getStreamVolume(AudioManager.STREAM_MUSIC)-1,0);
+                manager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                        manager.getStreamVolume(AudioManager.STREAM_MUSIC)-1,0);
                 //話す
                 try{
                     ttsProvider.say(getString(R.string.soundtest));
@@ -79,7 +76,8 @@ public class EnvisettingActivity extends TapiaActivity{
             @Override
             public void onClick(View view){
                 //音量を上げる(現在の音量を取得し、1足した値を設定している)
-                manager.setStreamVolume(AudioManager.STREAM_MUSIC,manager.getStreamVolume(AudioManager.STREAM_MUSIC)+1,0);
+                manager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                        manager.getStreamVolume(AudioManager.STREAM_MUSIC)+1,0);
                 //話す
                 try{
                     ttsProvider.say(getString(R.string.soundtest));
@@ -95,26 +93,30 @@ public class EnvisettingActivity extends TapiaActivity{
         findViewById(R.id.up).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.UP, 15,null);
+                TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.UP,
+                        15,null);
             }
         });
 
         findViewById(R.id.down).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.DOWN, 15,null);
+                TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.DOWN,
+                        15,null);
             }
         });
         findViewById(R.id.right).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.RIGHT, 15,null);
+                TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.RIGHT,
+                        15,null);
             }
         });
         findViewById(R.id.left).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.LEFT, 15,null);
+                TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.LEFT,
+                        15,null);
             }
         });
 
@@ -172,19 +174,5 @@ public class EnvisettingActivity extends TapiaActivity{
                 startActivity(new Intent(activity,SleepActivity.class));
             }
         });
-
-        /*yahooへリンク(試験的に実装)**************************************************************/
-
-        //「Y」ボタン押下
-        findViewById(R.id.browser).setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                startActivity(yahoo);
-            }
-        });
-
-
-
     }
-
 }
