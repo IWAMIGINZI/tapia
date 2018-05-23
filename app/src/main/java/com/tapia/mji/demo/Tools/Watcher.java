@@ -73,7 +73,11 @@ public class Watcher implements Runnable {
             DeviceLog.d("tapia", "setPreviewTexture failed.", e);
         }
         Parameters params = camera.getParameters();
-        params.setPictureSize(640, 384);
+
+        //タブレット/TAPIAで切り替える
+        //params.setPictureSize(640, 384); タピア
+        //params.setPictureSize(1024, 768);　タブレット
+        params.setPictureSize(1024, 768);
         camera.setParameters(params);
         camera.startPreview();
     }
