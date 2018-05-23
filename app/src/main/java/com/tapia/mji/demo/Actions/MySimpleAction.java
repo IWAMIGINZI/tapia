@@ -212,6 +212,12 @@ public abstract class MySimpleAction extends MyAction {
         }
     }
 
+    public static class EnterRoom extends MySimpleAction{
+        public EnterRoom(SimpleAction.OnSimpleActionListener simpleActionListener){
+            super(simpleActionListener,MyActionType.ENTER_ROOM);
+        }
+    }
+
     public static class Fortune extends MySimpleAction{
         public Fortune(SimpleAction.OnSimpleActionListener simpleActionListener){
             super(simpleActionListener,MyActionType.FORTUNE);

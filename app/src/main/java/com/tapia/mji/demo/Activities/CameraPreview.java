@@ -18,36 +18,49 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     private Camera mCam;
 
-    public CameraPreview(Context context, Camera cam) {
+    public CameraPreview(Context context, int cameraIndex) {
         super(context);
 
-        mCam = cam;
+        if (cameraIndex < 0) {
+            mCam = Camera.open();
+        } else {
+            mCam = Camera.open(cameraIndex);
+        }
 
         // サーフェスホルダーの取得とコールバック通知先の設定
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
+    public Camera getCamera() {
+        return mCam;
+    }
 
     public void surfaceCreated(SurfaceHolder holder) {
-        Camera.Parameters params=mCam.getParameters();
-        List<Camera.Size> sizeList=params.getSupportedPictureSizes();
-        for(int i=0;i<sizeList.size();i++){
-            Log.v("CameraPictureSize","Size="+sizeList.get(i).width+"x"+sizeList.get(i).height);
-        }
-        params.setPictureSize(1280,768);
-        mCam.setParameters(params);
         try {
-            // カメラインスタンスに、画像表示先を設定
-            mCam.setPreviewDisplay(holder);
-            // プレビュー開始
-            mCam.startPreview();
-        } catch (IOException e) {
-            //
+            Camera.Parameters params = mCam.getParameters();
+            List<Camera.Size> sizeList = params.getSupportedPictureSizes();
+            for (int i = 0; i < sizeList.size(); i++) {
+                Log.v("CameraPictureSize", "Size=" + sizeList.get(i).width + "x" + sizeList.get(i).height);
+            }
+            params.setPictureSize(1280, 768);
+            mCam.setParameters(params);
+            try {
+                // カメラインスタンスに、画像表示先を設定
+                mCam.setPreviewDisplay(holder);
+                // プレビュー開始
+                mCam.startPreview();
+            } catch (IOException e) {
+                //
+            }
+        } catch (RuntimeException e) {
+            Log.d("tapia", "surfaceCreated");
         }
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
+        mCam.release();
+        mCam = null;
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
