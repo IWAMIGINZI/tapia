@@ -22,7 +22,7 @@ public class StartActivity extends TapiaActivity {
         super.onCreate(savedInstanceState);
         //TapiaAudio.setVolume(this, 0, false);
         //TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
-        //タブレットで開発するときは以下をfalseにする
+        //ENABLE_ROBOT_FEATUREはタピアで開発するときはtrue、タブレットで開発するときはfalseにする
         TapiaApp.ENABLE_ROBOT_FEATURE = false;
         TapiaApp.hideAndroidUi(false);
         startActivity(new Intent(activity,SleepActivity.class));

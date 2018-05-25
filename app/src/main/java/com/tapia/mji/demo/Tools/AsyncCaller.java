@@ -78,6 +78,13 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
                     if (opened) {
                         if (face.has("PERSON_NAME")) {
                             String name = face.getString("PERSON_NAME");
+
+                            if(face.has("RECOGNITION_DISTANCE")){
+                                double distance = face.getDouble("RECOGNITION_DISTANCE");
+                                int recognitionrate = (int) (((double)1 - distance) * 100);
+                                name += " " + recognitionrate + "%";
+                            }
+
                             if (face.has("BIRTHDAY")) {
                                 if (face.getString("BIRTHDAY").equals("1")) {
                                     name += "::talk";
