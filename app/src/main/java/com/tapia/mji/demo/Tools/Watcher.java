@@ -6,6 +6,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -20,8 +21,11 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Calendar;
 
 public class Watcher implements Runnable {
@@ -74,10 +78,19 @@ public class Watcher implements Runnable {
         }
         Parameters params = camera.getParameters();
 
+        /*List<Size> PictureSizes = params.getSupportedPictureSizes();
+        if(PictureSizes != null && PictureSizes.size() > 1){
+            for(int i=0;i<PictureSizes.size();i++){
+                Size size = PictureSizes.get(i);
+                Log.d("picture","width:" + size.width + "height:" + size.height);
+            }
+
+        }*/
+
         //タブレット/TAPIAで切り替える
-        //params.setPictureSize(640, 384); タピア
+        //params.setPictureSize(640, 384)(2880,1728); タピア
         //params.setPictureSize(1024, 768);　タブレット
-        params.setPictureSize(1024, 768);
+        params.setPictureSize(640, 384);
         camera.setParameters(params);
         camera.startPreview();
     }
@@ -166,7 +179,7 @@ public class Watcher implements Runnable {
                 SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd_HHmmss");
                 String timeString = sf.format(cal.getTime());
                 imgPath = saveDir + "/" + timeString + ".jpg";
-
+                Log.d("processStart", "認証／認証開始 時刻：" + new Timestamp(System.currentTimeMillis()));
                 FileOutputStream fos;
                 try {
                     fos = new FileOutputStream(imgPath, true);
@@ -176,7 +189,9 @@ public class Watcher implements Runnable {
                     ars = new AnalyzerRecognitionSync();
                     ars.setImageParameter("MSG/FRAME_JPG_B64", imgPath);
                     ars.setParameter("MSG/FRAME_KEY", timeString);
+                    Log.d("processRoute", "認証／画像認証処理開始 時刻：" + new Timestamp(System.currentTimeMillis()));
                     new AsyncCaller(ars, json, watcher).execute();
+                    Log.d("processRoute", "認証／画像認証処理終了 時刻：" + new Timestamp(System.currentTimeMillis()));
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e("EnterRoom::picture", e.getMessage());
@@ -188,6 +203,7 @@ public class Watcher implements Runnable {
             } else {
                 DeviceLog.d("tapia", "watcher stopped, so do nothing.(onPictureTaken)");
             }
+            Log.d("processEnd  ", "認証／認証終了 時刻：" + new Timestamp(System.currentTimeMillis()));
         }
     };
 
@@ -212,7 +228,10 @@ public class Watcher implements Runnable {
     public void onCompleteRecognition(ArrayList<String> names) {
         DeviceLog.d("tapia", "I'm working.");
         unregistAndroidDB(imgPath);
+        Log.d("processRoute", "認証／氏名表示・読上処理開始 時刻：" + new Timestamp(System.currentTimeMillis()));
         activity.onRecognitionCompleted(names);
+        Log.d("processRoute", "認証／氏名表示・読上処理終了 時刻：" + new Timestamp(System.currentTimeMillis()));
         pictureTaking = false;
+        //Log.d("processEnd", "認証終了 時刻：" + new Timestamp(System.currentTimeMillis()));
     }
 }

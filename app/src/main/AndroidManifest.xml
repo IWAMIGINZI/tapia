@@ -70,6 +70,10 @@
         <meta-data
             android:name="labellio_api_url"
             android:value="http://172.31.92.113/l4f/api.php" />
+            <!--android:value="http://172.20.10.14/l4f/api.php" />-->
+
+
+
         <meta-data
             android:name="labellio_access_key"
             android:value="925d731d-bf63-4838-92cf-e6bb631fdc87" />
@@ -97,9 +101,12 @@
         <meta-data
             android:name="fire_volume_threshold"
             android:value="2000" />
+        <!--<meta-data
+            android:name="distance_threshold"
+            android:value="0.5" />-->
         <meta-data
             android:name="distance_threshold"
-            android:value="0.5" />
+            android:value="0.3" />
     </application>
 
 </manifest>

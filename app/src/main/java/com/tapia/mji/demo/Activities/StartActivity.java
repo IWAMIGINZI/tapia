@@ -23,7 +23,7 @@ public class StartActivity extends TapiaActivity {
         //TapiaAudio.setVolume(this, 0, false);
         //TapiaApp.setCurrentLanguage(Language.LanguageID.JAPANESE);
         //ENABLE_ROBOT_FEATUREはタピアで開発するときはtrue、タブレットで開発するときはfalseにする
-        TapiaApp.ENABLE_ROBOT_FEATURE = false;
+        TapiaApp.ENABLE_ROBOT_FEATURE = true;
         TapiaApp.hideAndroidUi(false);
         startActivity(new Intent(activity,SleepActivity.class));
         //↓壁紙をTAPIAに変えてしまう

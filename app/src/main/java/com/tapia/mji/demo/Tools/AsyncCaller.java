@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.tapia.mji.demo.Labellio.AnalyzerRecognitionSync;
+import com.tapia.mji.demo.Labellio.LearnerLearning;
 import com.tapia.mji.tapialib.TapiaApp;
 
 import org.json.JSONArray;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class AsyncCaller extends AsyncTask<Void, Void, Void> {
@@ -73,23 +75,37 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
             names.clear();
             for (int i = 0; i < faces.length(); i++) {
                 JSONObject face = faces.getJSONObject(i);
+                //Log.d("processRoute", "認証画像 BASE64：" + face.getString("FACE_JPG_B64"));
                 if (face.has("PERSON_CODE")) {
+                    //Log.d("processRoute", "認証／解錠処理開始 時刻：" + new Timestamp(System.currentTimeMillis()));
                     boolean opened = actionOpenSesami(face);
+                    //Log.d("processRoute", "認証／解錠処理終了 時刻：" + new Timestamp(System.currentTimeMillis()));
                     if (opened) {
                         if (face.has("PERSON_NAME")) {
                             String name = face.getString("PERSON_NAME");
 
-                            if(face.has("RECOGNITION_DISTANCE")){
-                                double distance = face.getDouble("RECOGNITION_DISTANCE");
-                                int recognitionrate = (int) (((double)1 - distance) * 100);
+                            if(face.has("RECOGNITION_ACCURACY")){
+                                //double distance = face.getDouble("RECOGNITION_DISTANCE");
+                                //int recognitionrate = (int) (((double)1 - distance) * 100);
+                                int recognitionrate = face.getInt("RECOGNITION_ACCURACY");
                                 name += " " + recognitionrate + "%";
+
+                               //if(recognitionrate >= 60){
+                               //     actionLearningFace(face);
+                               //}
+
                             }
 
-                            if (face.has("BIRTHDAY")) {
-                                if (face.getString("BIRTHDAY").equals("1")) {
+                            //if (face.has("TALK")) {
+                                //if (face.getString("TALK").equals("1")) {
+                                //if (face.getInt("TALK") == 1) {
+                                    if(face.has("KANA")){
+                                        if(!face.getString("KANA").equals("") )
+                                        name += "@" + face.getString("KANA");
+                                    }
                                     name += "::talk";
-                                }
-                            }
+                                //}
+                            //}
                             names.add(name);
                         }
                     }
@@ -105,17 +121,35 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
         try {
             String code = face.getString("PERSON_CODE");
             if (!code.equals("00000000")) {
-                if (face.has("RECOGNITION_DISTANCE")) {
-                    double distance = face.getDouble("RECOGNITION_DISTANCE");
+                //if (face.has("RECOGNITION_DISTANCE")) {
+                if (face.has("RECOGNITION_ACCURACY")) {
+                    //double distance = face.getDouble("RECOGNITION_DISTANCE");
+                    double accuracy = (100 - face.getDouble("RECOGNITION_ACCURACY")) / 100;
                     Context context = TapiaApp.getAppContext();
                     ApplicationInfo appliInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
                     float threshold = appliInfo.metaData.getFloat("distance_threshold");
-                    if (distance <= threshold) {
-                        String name = "";
-                        if (face.has("PERSON_NAME")) {
-                            name = face.getString("PERSON_NAME");
-                            doOpenSesami(code, name, face);
-                            opened = true;
+                    if(face.has("EXCLUSION")){
+                        if(face.getInt("EXCLUSION") == 1){
+
+                        } else {
+                            if (accuracy <= threshold) {
+                                String name = "";
+                                if (face.has("PERSON_NAME")) {
+                                    name = face.getString("PERSON_NAME");
+                                    doOpenSesami(code, name, face);
+                                    opened = true;
+                                }
+                            }
+                        }
+                    } else {
+                        //if (distance <= threshold) {
+                        if (accuracy <= threshold) {
+                            String name = "";
+                            if (face.has("PERSON_NAME")) {
+                                name = face.getString("PERSON_NAME");
+                                doOpenSesami(code, name, face);
+                                opened = true;
+                            }
                         }
                     }
                 }
@@ -159,6 +193,31 @@ public class AsyncCaller extends AsyncTask<Void, Void, Void> {
         } catch (IOException e) {
             DeviceLog.d("tapia", "doOpenSesami::IOException", e);
         }
+    }
+
+    // 検出画像登録処理
+    private void actionLearningFace(JSONObject face){
+        try{
+            LearnerLearning ll = new LearnerLearning();
+            ll.setParameter("MSG/FRAME_JPG_B64", face.getString("FACE_JPG_B64"));
+            ll.setParameter("MSG/PERSON_CODE", face.getString("PERSON_CODE"));
+            ll.setParameter("MSG/PERSON_NAME", face.getString("PERSON_NAME"));
+            //ll.setParameter("MSG/BIRTHDAY", face.getString("BIRTHDAY"));
+            new AsyncCaller_ll(ll, json).execute();
+            /*if (json_ll.getInt("STATUS") == 0) {
+                JSONObject result_ll = json_ll.getJSONObject("RESULT");
+                if (result_ll.has("FACE")) {
+                    DeviceLog.d("learning", "登録成功");
+                }
+
+            }else{
+                DeviceLog.d("learning", "登録失敗");
+            }*/
+        }catch (Exception e) {
+            e.printStackTrace();
+            Log.e("Learning::picture", e.getMessage());
+        }
+
     }
 
     @Override

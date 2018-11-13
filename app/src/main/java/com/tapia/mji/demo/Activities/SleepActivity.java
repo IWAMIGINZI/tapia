@@ -969,7 +969,7 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                 if (!talking) {
                     talking = true;
                     String talk = opened;
-                    int idx = opened.indexOf(" ");
+                    /*int idx = opened.indexOf(" ");
                     if (idx > 0) {
                         talk = opened.substring(0, idx);
                     } else {
@@ -977,8 +977,36 @@ public class SleepActivity extends TapiaActivity implements SensorEventListener 
                         if (idx > 0) {
                             talk = opened.substring(0, idx);
                         }
+                    }*/
+
+                    int idx = opened.indexOf("@");
+                    if (idx > 0) {
+                        talk = opened.substring(idx + 1);
+                        //画面表示を再設定
+                        TextView tvPersonName = (TextView) findViewById(R.id.textPersonName);
+                        String call = opened.substring(0,idx);
+                        tvPersonName.setText(call);
+                    } else {
+                        idx = opened.indexOf(" ");
+                        if (idx > 0) {
+                            talk = opened.substring(0, idx);
+                        } else {
+                            idx = opened.indexOf("　");
+                            if (idx > 0) {
+                                talk = opened.substring(0, idx);
+                            }
+                        }
                     }
-                    ttsProvider.ask(talk + "さん、お入りください。", sttProvider);
+                    ttsProvider.say(talk + "さん、お入りください。");
+                }else{
+                    //talking＝trueの場合は画面表示の再設定のみ行う
+                    int idx = opened.indexOf("@");
+                    if (idx > 0) {
+                        //画面表示を再設定
+                        TextView tvPersonName = (TextView) findViewById(R.id.textPersonName);
+                        String call = opened.substring(0,idx);
+                        tvPersonName.setText(call);
+                    }
                 }
             } catch (LanguageNotSupportedException e) {
                 DeviceLog.d("tapia", "LanguageNotSupportedException", e);

@@ -94,7 +94,7 @@ public class EnvisettingActivity extends TapiaActivity{
             @Override
             public void onClick(View view){
                 TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.UP,
-                        15,null);
+                        3,null);
             }
         });
 
@@ -102,7 +102,7 @@ public class EnvisettingActivity extends TapiaActivity{
             @Override
             public void onClick(View view){
                 TapiaRobot.rotate(activity, TapiaRobot.RotateOrientation.DOWN,
-                        15,null);
+                        3,null);
             }
         });
         findViewById(R.id.right).setOnClickListener(new View.OnClickListener(){
